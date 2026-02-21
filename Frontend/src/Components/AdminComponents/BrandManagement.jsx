@@ -104,7 +104,7 @@ function BrandManagement() {
                     setBrand("")
                     setBrandDetails(null)
                 }}>Add Brand</button>
-                <Input type="text" placeholder="Enter your brand name!" className="w-[200px]"
+                <Input type="text" placeholder="Enter your brand name!" className="w-[200px] bg-white"
                     onChange={(e) => setSearchBrand(e.target.value)}
                 />
             </div>
@@ -129,10 +129,10 @@ function BrandManagement() {
                     SearchBrand ? (
                         SearchResult && SearchResult.length > 0 ? (
                             SearchResult.map((items, i) => (
-                                <div className="group flex justify-between w-full items-center px-4 py-2 border-b border-gray-500" key={items?._id}>
+                                <div className="group flex justify-between w-full items-center px-4 py-2 border-b border-gray-500 bg-gray-200" key={items?._id}>
                                     <h1 className='text-lg font-bold'>{i + 1}</h1>
                                     <h2 className='text-lg font-bold'>{items.BrandName}</h2>
-                                    <div className="space-x-3 opacity-0 group-hover:opacity-100 transition-all">
+                                    <div className="space-x-3 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-x-4 group-hover:translate-x-0">
                                         <button className='bg-transparent border border-blue-800 px-2 py-1 rounded-lg hover:bg-blue-500 hover:text-white cursor-pointer' onClick={() => {
                                             setOpenDialog(true)
                                             HandleOutput(items)
@@ -147,10 +147,10 @@ function BrandManagement() {
                     ) : (
                         Brands && Brands.length > 0 ?
                             Brands.map((items, i) => (
-                                <div className="group flex justify-between w-full items-center px-4 py-2 border-b border-gray-500" key={items?._id}>
+                                <div className="group flex justify-between w-full items-center px-4 py-2 border-b border-gray-500 bg-gray-200" key={items?._id}>
                                     <h1 className='text-lg font-bold'>{i + 1}</h1>
                                     <h2 className='text-lg font-bold'>{items.BrandName}</h2>
-                                    <div className="space-x-3 opacity-0 group-hover:opacity-100 transition-all">
+                                    <div className="space-x-3 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-x-4 group-hover:translate-x-0">
                                         <button className='bg-transparent border border-blue-800 px-2 py-1 rounded-lg hover:bg-blue-500 hover:text-white cursor-pointer' onClick={() => {
                                             setOpenDialog(true)
                                             HandleOutput(items)

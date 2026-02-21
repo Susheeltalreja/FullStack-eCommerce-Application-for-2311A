@@ -38,11 +38,11 @@ const ProductForm = [
     },
 ]
 
-function AddProductForm({ OpenForm, setOpenForm }) {
+function AddProductForm({ OpenForm, setOpenForm, Data }) {
 
     const dispatch = useDispatch();
 
-    const {Brands, Category} = useSelector(st => st.BrandCategory);
+    const { Brands, Category } = useSelector(st => st.BrandCategory);
     // console.log("Brands", Brands);
     // console.log("Category: ", Category);
 
@@ -61,13 +61,40 @@ function AddProductForm({ OpenForm, setOpenForm }) {
         ProductBrand: "",
         ProductDesc: ""
     })
-    function HandleProduct(){
+
+    useEffect(() => {
+        if (Data) {
+            setFormData({
+                ProductImage: Data.ProductImage || "",
+                ProductName: Data.ProductName || "",
+                ProductPrice: Data.ProductPrice || 0,
+                ProductSalePrice: Data.ProductSalePrice || 0,
+                ProductQuantity: Data.ProductQuantity || 0,
+                ProductCategory: Data.ProductCategory || "",
+                ProductBrand: Data.ProductBrand || "",
+                ProductDesc: Data.ProductDesc || ""
+            })
+        }else{
+            setFormData({
+                ProductImage: "",
+                ProductName: "",
+                ProductPrice: 0,
+                ProductSalePrice: 0,
+                ProductQuantity: 0,
+                ProductCategory: "",
+                ProductBrand: "",
+                ProductDesc: ""
+            })
+        }
+    }, [Data])
+
+    function HandleProduct() {
         dispatch(AddProductThunk(formData)).then((data) => {
-            if(data?.payload?.success){
+            if (data?.payload?.success) {
                 setOpenForm(false)
                 dispatch(FetchProductsThunk())
                 toast.success(`${data?.payload?.message}`)
-            }else{
+            } else {
                 toast.error(`${data?.payload?.message}`)
             }
         })
@@ -81,28 +108,30 @@ function AddProductForm({ OpenForm, setOpenForm }) {
                 </SheetHeader>
                 <div className="space-y-3 px-4 py-2 overflow-auto">
                     <div className="">
-                        <ImageUpload formData={formData} setFormData={setFormData}/>
+                        <ImageUpload formData={formData} setFormData={setFormData} />
                     </div>
                     {
                         ProductForm.map((i) => (
                             <div className="" key={i.name}>
                                 <Label className="mb-2">{i.label}</Label>
-                                <Input type={i.type} placeholder={i.placeholder} 
-                                onChange={(e) => setFormData({
-                                    ...formData,
-                                    [i.name] : e.target.value
-                                })}
+                                <Input type={i.type} placeholder={i.placeholder}
+                                    value={formData?.[i.name]}
+                                    onChange={(e) => setFormData({
+                                        ...formData,
+                                        [i.name]: e.target.value
+                                    })}
                                 />
                             </div>
                         ))
                     }
                     <div className="">
                         <Label className="mb-2">Product Category</Label>
-                        <Select 
-                        onValueChange={(value) => setFormData({
-                            ...formData,
-                            "ProductCategory": value
-                        })}
+                        <Select
+                        value={formData?.ProductCategory}
+                            onValueChange={(value) => setFormData({
+                                ...formData,
+                                "ProductCategory": value
+                            })}
                         >
                             <SelectTrigger className="w-full">
                                 <SelectValue placeholder="Select your category" />
@@ -121,7 +150,9 @@ function AddProductForm({ OpenForm, setOpenForm }) {
                     </div>
                     <div className="">
                         <Label className="mb-2">Product Brand</Label>
-                        <Select onValueChange={(value) => setFormData({
+                        <Select
+                        value={formData?.ProductBrand}
+                        onValueChange={(value) => setFormData({
                             ...formData,
                             "ProductBrand": value
                         })}>
@@ -142,10 +173,12 @@ function AddProductForm({ OpenForm, setOpenForm }) {
                     </div>
                     <div className="">
                         <Label className="mb-2">Product Description</Label>
-                        <Textarea placeholder="Enter product's description" onChange={(e) => setFormData({
+                        <Textarea
+                        value={formData?.ProductDesc}
+                        placeholder="Enter product's description" onChange={(e) => setFormData({
                             ...formData,
                             "ProductDesc": e.target.value
-                        })}/>
+                        })} />
                     </div>
                     <div className="">
                         <Button className="cursor-pointer" onClick={() => HandleProduct()}>Add</Button>

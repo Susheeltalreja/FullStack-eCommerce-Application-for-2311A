@@ -96,7 +96,7 @@ function CategoryManagment() {
                     setCategoryDetails(null)
                     setCategory("")
                 }}>Add Category</button>
-                <Input type="text" placeholder="Enter your category name!" className="w-[200px]"
+                <Input type="text" placeholder="Enter your category name!" className="w-[200px] bg-white"
                     onChange={(e) => setSearchCategory(e.target.value)}
                 />
             </div>
@@ -116,15 +116,15 @@ function CategoryManagment() {
             </Dialog>
 
 
-            <div className="flex flex-col gap-2 w-full h-[300px] overflow-auto justify-start items-start mt-3">
+            <div className="flex flex-col gap-2 w-full h-[80%] overflow-auto justify-start items-start mt-3">
                 {
                     SearchCategory ? (
                         SearchResult && SearchResult.length > 0 ?
                             (SearchResult.map((items, i) => (
-                                <div className="group flex justify-between w-full items-center px-4 py-2 border-b border-gray-500" key={items?._id}>
+                                <div className="group flex justify-between w-full items-center px-4 py-2 border-b border-gray-500 bg-gray-200" key={items?._id}>
                                     <h1 className='text-lg font-bold'>{i + 1}</h1>
                                     <h2 className='text-lg font-bold'>{items.CategoryName}</h2>
-                                    <div className="space-x-3 opacity-0 group-hover:opacity-100 transition-all">
+                                    <div className="space-x-3 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-x-4 group-hover:translate-x-0">
                                         <button className='bg-transparent border border-blue-800 px-2 py-1 rounded-lg hover:bg-blue-500 hover:text-white cursor-pointer'
                                             onClick={() => {
                                                 HandleEditCategory(items)
@@ -140,10 +140,11 @@ function CategoryManagment() {
                     ) : (
                         Category && Category.length > 0 ?
                             Category.map((items, i) => (
-                                <div className="group flex justify-between w-full items-center px-4 py-2 border-b border-gray-500" key={items?._id}>
+                                <div className="group flex justify-between w-full items-center px-4 py-2 border-b border-gray-500 bg-gray-200" key={items?._id}>
                                     <h1 className='text-lg font-bold'>{i + 1}</h1>
                                     <h2 className='text-lg font-bold'>{items.CategoryName}</h2>
-                                    <div className="space-x-3 opacity-0 group-hover:opacity-100 transition-all">
+                                    <div className="space-x-3 opacity-0 group-hover:opacity-100 transition-all
+                                    duration-500 translate-x-4 group-hover:translate-x-0">
                                         <button className='bg-transparent border border-blue-800 px-2 py-1 rounded-lg hover:bg-blue-500 hover:text-white cursor-pointer'
                                             onClick={() => {
                                                 HandleEditCategory(items)

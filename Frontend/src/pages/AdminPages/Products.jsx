@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from 'react-redux'
 
 function Products() {
   const [OpenForm, setOpenForm] = useState(false)
-
+  const [Data, setData] = useState(null)
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(FetchProductsThunk())
@@ -15,18 +15,21 @@ function Products() {
 
   const {Products} = useSelector(st => st.Product)
 
-  console.log("Product", Products)
+  // console.log("Data: ", Data)
 
   return (
     <div className='relative'>
       <div className="h-20">
-      <Button className="absolute right-6 top-6 cursor-pointer" onClick={() => setOpenForm(true)}>Add Product</Button>
-      <AddProductForm OpenForm={OpenForm} setOpenForm={setOpenForm}/>
+      <Button className="absolute right-6 top-6 cursor-pointer" onClick={() => {
+        setOpenForm(true)
+        setData(null)
+      }}>Add Product</Button>
+      <AddProductForm OpenForm={OpenForm} setOpenForm={setOpenForm} Data={Data}/>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 px-3">
         {
           Products && Products.length > 0 ?
-          (Products.map((item) => <ProductCards product={item}/>)) : (<p>No products found</p>)
+          (Products.map((item) => <ProductCards product={item} setOpenForm={setOpenForm} setData={setData}/>)) : (<p>No products found</p>)
         }
       </div>
     </div>

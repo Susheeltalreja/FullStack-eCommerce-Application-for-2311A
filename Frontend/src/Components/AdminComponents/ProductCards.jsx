@@ -1,6 +1,6 @@
 import React from 'react'
 
-function ProductCards({ product }) {
+function ProductCards({ product, setOpenForm, setData }) {
   return (
     <div className='group relative border border-gray-200 bg-white space-y-4 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:border-orange-500'>
       
@@ -30,7 +30,12 @@ function ProductCards({ product }) {
 
       {/* Action Buttons */}
       <div className="flex gap-2 px-4 pb-4">
-        <button className='flex-1 bg-orange-500 text-white py-2 rounded-lg font-bold transition-all duration-200 hover:bg-orange-600 active:scale-95 cursor-pointer'>
+        <button className='flex-1 bg-orange-500 text-white py-2 rounded-lg font-bold transition-all duration-200 hover:bg-orange-600 active:scale-95 cursor-pointer'
+        onClick={() => {
+          setOpenForm(true)
+          setData(product)
+        }}
+        >
           Edit
         </button>
         <button className='flex-1 bg-black text-white py-2 rounded-lg font-bold transition-all duration-200 hover:bg-gray-800 active:scale-95 cursor-pointer'>

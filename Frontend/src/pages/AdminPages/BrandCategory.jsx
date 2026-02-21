@@ -4,7 +4,7 @@ import React from 'react'
 
 function BrandCategory() {
   return (
-    <div className='grid md:grid-cols-2 px-4 py-2 gap-2 h-screen'>
+    <div className='grid md:grid-cols-2 px-4 py-2 gap-2 h-full'>
       <BrandManagement />
       <CategoryManagment />
     </div>
