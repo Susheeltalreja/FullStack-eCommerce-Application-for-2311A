@@ -96,14 +96,14 @@ function BrandManagement() {
     console.log("Search Result: ", SearchResult);
 
     return (
-        <div className='w-full h-100 border border-black p-2'>
+        <div className='w-full  p-3 h-[70%] bg-gray-100 rounded-3xl '>
 
             <div className="flex w-full justify-between items-center">
-                <Button className="cursor-pointer" onClick={() => {
+                <button className="cursor-pointer px-4 py-2 bg-orange-400 rounded-2xl text-white font-bold" onClick={() => {
                     setOpenDialog(true)
                     setBrand("")
                     setBrandDetails(null)
-                }}>Add Brand</Button>
+                }}>Add Brand</button>
                 <Input type="text" placeholder="Enter your brand name!" className="w-[200px]"
                     onChange={(e) => setSearchBrand(e.target.value)}
                 />
@@ -124,15 +124,15 @@ function BrandManagement() {
                 </DialogContent>
             </Dialog>
 
-            <div className="flex flex-col gap-2 w-full h-[300px] overflow-auto justify-start items-start mt-3">
+            <div className="flex flex-col gap-2 w-full h-[80%] overflow-auto justify-start items-start mt-3">
                 {
                     SearchBrand ? (
                         SearchResult && SearchResult.length > 0 ? (
                             SearchResult.map((items, i) => (
-                                <div className="flex justify-between w-full items-center px-4 py-2 border-b" key={items?._id}>
+                                <div className="group flex justify-between w-full items-center px-4 py-2 border-b border-gray-500" key={items?._id}>
                                     <h1 className='text-lg font-bold'>{i + 1}</h1>
                                     <h2 className='text-lg font-bold'>{items.BrandName}</h2>
-                                    <div className="space-x-3">
+                                    <div className="space-x-3 opacity-0 group-hover:opacity-100 transition-all">
                                         <button className='bg-transparent border border-blue-800 px-2 py-1 rounded-lg hover:bg-blue-500 hover:text-white cursor-pointer' onClick={() => {
                                             setOpenDialog(true)
                                             HandleOutput(items)
@@ -147,10 +147,10 @@ function BrandManagement() {
                     ) : (
                         Brands && Brands.length > 0 ?
                             Brands.map((items, i) => (
-                                <div className="flex justify-between w-full items-center px-4 py-2 border-b" key={items?._id}>
+                                <div className="group flex justify-between w-full items-center px-4 py-2 border-b border-gray-500" key={items?._id}>
                                     <h1 className='text-lg font-bold'>{i + 1}</h1>
                                     <h2 className='text-lg font-bold'>{items.BrandName}</h2>
-                                    <div className="space-x-3">
+                                    <div className="space-x-3 opacity-0 group-hover:opacity-100 transition-all">
                                         <button className='bg-transparent border border-blue-800 px-2 py-1 rounded-lg hover:bg-blue-500 hover:text-white cursor-pointer' onClick={() => {
                                             setOpenDialog(true)
                                             HandleOutput(items)

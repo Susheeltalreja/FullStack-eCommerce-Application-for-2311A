@@ -101,6 +101,7 @@ const LoginUser = async (req, res) => {
             {
                 ID: FindUser?._id,
                 Name: FindUser?.UserName,
+                Email: FindUser?.UserEmail,
                 Role: FindUser?.UserRole
             },
             "USER_SECRET_KEY",
@@ -114,6 +115,7 @@ const LoginUser = async (req, res) => {
             User: {
                 ID: FindUser?._id,
                 Name: FindUser?.UserName,
+                Email: FindUser?.UserEmail,
                 Role: FindUser?.UserRole
             }
         })
