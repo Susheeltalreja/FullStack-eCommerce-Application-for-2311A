@@ -7,10 +7,10 @@ import axios from 'axios';
 
 function ImageUpload({formData, setFormData}) {
 
-  const [Image, setImage] = useState(null);
+  const [Image, setImage] = useState(formData.ProductImage || null);
 
-  const InputRef = useRef();
   // console.log(Image);
+  const InputRef = useRef();
   function SelectImage(e) {
     setImage(e.target.files[0]);
   }
@@ -39,6 +39,8 @@ function ImageUpload({formData, setFormData}) {
     })
   }
 
+  // console.log("FormData", formData.ProductImage)
+
   // useEffect(() => {
   //   if(!Image) return;
   //   HandleUpload();
@@ -54,7 +56,7 @@ function ImageUpload({formData, setFormData}) {
             <CloudIcon size={40} />
             <h3>Drag & Drop or Click to Upload</h3>
           </div>) : (
-            <div className="w-full flex justify-between items-center px-4">
+            Image.name ? (<div className="w-full flex justify-between items-center px-4">
               <Folder size={40} />
               <h3 className='w-[200px]'>{Image?.name}</h3>
               {
@@ -63,7 +65,7 @@ function ImageUpload({formData, setFormData}) {
                   <Button variant="outline" className="cursor-pointer" onClick={() => HandleUpload()}><Check /></Button>
                   </div>)
               }
-            </div>
+            </div>) : (<img src={`http://localhost:5000/uploads/${Image}`} className='object-fit w-full h-32'/>)
           )
         }
       </Label>
