@@ -9,7 +9,7 @@ function ImageUpload({formData, setFormData}) {
 
   const [Image, setImage] = useState(formData.ProductImage || null);
 
-  console.log(Image);
+  // console.log(Image);
   const InputRef = useRef();
   function SelectImage(e) {
     setFormData({
@@ -47,12 +47,8 @@ function ImageUpload({formData, setFormData}) {
     })
   }
 
-  console.log("FormData", formData.ProductImage)
+  // console.log("FormData", formData.ProductImage)
 
-  // useEffect(() => {
-  //   if(!Image) return;
-  //   HandleUpload();
-  // }, [Image])
 
   return (
     <div className="">

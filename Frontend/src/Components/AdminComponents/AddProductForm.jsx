@@ -74,7 +74,7 @@ function AddProductForm({ OpenForm, setOpenForm, Data }) {
                 ProductBrand: Data.ProductBrand || "",
                 ProductDesc: Data.ProductDesc || ""
             })
-        }else{
+        } else {
             setFormData({
                 ProductImage: "",
                 ProductName: "",
@@ -89,8 +89,8 @@ function AddProductForm({ OpenForm, setOpenForm, Data }) {
     }, [Data])
 
     function HandleProduct() {
-        if(Data?._id){
-            dispatch(UpdateProductThunk({Data: formData, Id: Data?._id})).then((data) => {
+        if (Data?._id) {
+            dispatch(UpdateProductThunk({ Data: formData, Id: Data?._id })).then((data) => {
                 if (data?.payload?.success) {
                     setOpenForm(false)
                     dispatch(FetchProductsThunk())
@@ -99,7 +99,7 @@ function AddProductForm({ OpenForm, setOpenForm, Data }) {
                     toast.error(`${data?.payload?.message}`)
                 }
             })
-        }else{
+        } else {
             dispatch(AddProductThunk(formData)).then((data) => {
                 if (data?.payload?.success) {
                     setOpenForm(false)
@@ -124,75 +124,79 @@ function AddProductForm({ OpenForm, setOpenForm, Data }) {
                     <div className="">
                         <ImageUpload formData={formData} setFormData={setFormData} />
                     </div>
-                    {
-                        ProductForm.map((i) => (
-                            <div className="" key={i.name}>
-                                <Label className="mb-2">{i.label}</Label>
-                                <Input type={i.type} placeholder={i.placeholder}
-                                    value={formData?.[i.name]}
-                                    onChange={(e) => setFormData({
-                                        ...formData,
-                                        [i.name]: e.target.value
-                                    })}
-                                />
-                            </div>
-                        ))
-                    }
-                    <div className="">
-                        <Label className="mb-2">Product Category</Label>
-                        <Select
-                        value={formData?.ProductCategory}
-                            onValueChange={(value) => setFormData({
-                                ...formData,
-                                "ProductCategory": value
-                            })}
-                        >
-                            <SelectTrigger className="w-full">
-                                <SelectValue placeholder="Select your category" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectGroup>
-                                    <SelectLabel>Product Category</SelectLabel>
-                                    {
-                                        Category ? (Category.map((e) => (
-                                            <SelectItem value={e.CategoryName} key={e.CategoryName}>{e.CategoryName}</SelectItem>
-                                        ))) : (<p>No categories available</p>)
-                                    }
-                                </SelectGroup>
-                            </SelectContent>
-                        </Select>
+                    <div className="grid grid-cols-2 gap-2">
+                        {
+                            ProductForm.map((i) => (
+                                <div className={`${i.name === "ProductQuantity" || i.name === "ProductSalePrice" ? "col-span-2" : ""}`} key={i.name}>
+                                    <Label className="mb-2">{i.label} <sup className={`text-red-500 text-[14px] ${i.name === "ProductSalePrice" ? "hidden" : ""}`}>*</sup></Label>
+                                    <Input type={i.type} placeholder={i.placeholder}
+                                        value={formData?.[i.name]}
+                                        onChange={(e) => setFormData({
+                                            ...formData,
+                                            [i.name]: e.target.value
+                                        })}
+                                    />
+                                </div>
+                            ))
+                        }
                     </div>
-                    <div className="">
-                        <Label className="mb-2">Product Brand</Label>
-                        <Select
-                        value={formData?.ProductBrand}
-                        onValueChange={(value) => setFormData({
-                            ...formData,
-                            "ProductBrand": value
-                        })}>
-                            <SelectTrigger className="w-full">
-                                <SelectValue placeholder="Select your brand" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectGroup>
-                                    <SelectLabel>Product Brand</SelectLabel>
-                                    {
-                                        Brands ? (Brands.map((e) => (
-                                            <SelectItem value={e.BrandName} key={e.BrandName}>{e.BrandName}</SelectItem>
-                                        ))) : (<p>No brand available</p>)
-                                    }
-                                </SelectGroup>
-                            </SelectContent>
-                        </Select>
+                    <div className="grid grid-cols-2 gap-2">
+                        <div className="">
+                            <Label className="mb-2">Product Category <sup className='text-red-500 text-[14px]'>*</sup></Label>
+                            <Select
+                                value={formData?.ProductCategory}
+                                onValueChange={(value) => setFormData({
+                                    ...formData,
+                                    "ProductCategory": value
+                                })}
+                            >
+                                <SelectTrigger className="w-full">
+                                    <SelectValue placeholder="Select your category" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectGroup>
+                                        <SelectLabel>Product Category</SelectLabel>
+                                        {
+                                            Category ? (Category.map((e) => (
+                                                <SelectItem value={e.CategoryName} key={e.CategoryName}>{e.CategoryName}</SelectItem>
+                                            ))) : (<p>No categories available</p>)
+                                        }
+                                    </SelectGroup>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="">
+                            <Label className="mb-2">Product Brand <sup className='text-red-500 text-[14px]'>*</sup></Label>
+                            <Select
+                                value={formData?.ProductBrand}
+                                onValueChange={(value) => setFormData({
+                                    ...formData,
+                                    "ProductBrand": value
+                                })}>
+                                <SelectTrigger className="w-full">
+                                    <SelectValue placeholder="Select your brand" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectGroup>
+                                        <SelectLabel>Product Brand</SelectLabel>
+                                        {
+                                            Brands ? (Brands.map((e) => (
+                                                <SelectItem value={e.BrandName} key={e.BrandName}>{e.BrandName}</SelectItem>
+                                            ))) : (<p>No brand available</p>)
+                                        }
+                                    </SelectGroup>
+                                </SelectContent>
+                            </Select>
+                        </div>
                     </div>
                     <div className="">
                         <Label className="mb-2">Product Description</Label>
                         <Textarea
-                        value={formData?.ProductDesc}
-                        placeholder="Enter product's description" onChange={(e) => setFormData({
-                            ...formData,
-                            "ProductDesc": e.target.value
-                        })} />
+                            value={formData?.ProductDesc}
+                            placeholder="Enter product's description" onChange={(e) => setFormData({
+                                ...formData,
+                                "ProductDesc": e.target.value
+                            })} />
                     </div>
                     <div className="">
                         <Button className="cursor-pointer" onClick={() => HandleProduct()}>Add</Button>
