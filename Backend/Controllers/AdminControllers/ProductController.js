@@ -91,13 +91,13 @@ const UpdateProducts = async (req, res) => {
         const ProductId = req.params.id;
         const FindProduct = await ProductModel.findOne({_id: ProductId})
         if(!FindProduct){
-            return res.status(401).json({
+            return res.json({
                 success: false,
                 message: "Product not found"
             })
         }
         if (!ProductImage || !ProductName || !ProductPrice || !ProductQuantity || !ProductCategory || !ProductBrand) {
-            return res.status(401).json({
+            return res.json({
                 success: false,
                 message: "All Input fields are required"
             })

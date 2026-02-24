@@ -9,9 +9,13 @@ function ImageUpload({formData, setFormData}) {
 
   const [Image, setImage] = useState(formData.ProductImage || null);
 
-  // console.log(Image);
+  console.log(Image);
   const InputRef = useRef();
   function SelectImage(e) {
+    setFormData({
+      ...formData,
+      ProductImage: ""
+    })
     setImage(e.target.files[0]);
   }
   // console.log("Image: ", Image);
@@ -20,6 +24,10 @@ function ImageUpload({formData, setFormData}) {
   }
   function HandleDrop(e) {
     e.preventDefault();
+    setFormData({
+      ...formData,
+      ProductImage: ""
+    })
     setImage(e.dataTransfer.files[0])
   }
   function HandleRemove() {
@@ -39,7 +47,7 @@ function ImageUpload({formData, setFormData}) {
     })
   }
 
-  // console.log("FormData", formData.ProductImage)
+  console.log("FormData", formData.ProductImage)
 
   // useEffect(() => {
   //   if(!Image) return;

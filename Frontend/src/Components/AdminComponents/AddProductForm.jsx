@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { FetchBrandThunk, FetchCategoryThunk } from '@/StateManagement/AdminSlices/BrandCategorySlice'
 import { Textarea } from '../ui/textarea'
 import ImageUpload from './ImageUpload'
-import { AddProductThunk, FetchProductsThunk } from '@/StateManagement/AdminSlices/ProductSlice'
+import { AddProductThunk, FetchProductsThunk, UpdateProductThunk } from '@/StateManagement/AdminSlices/ProductSlice'
 import { Button } from '../ui/button'
 import { toast } from 'sonner'
 
@@ -89,16 +89,30 @@ function AddProductForm({ OpenForm, setOpenForm, Data }) {
     }, [Data])
 
     function HandleProduct() {
-        dispatch(AddProductThunk(formData)).then((data) => {
-            if (data?.payload?.success) {
-                setOpenForm(false)
-                dispatch(FetchProductsThunk())
-                toast.success(`${data?.payload?.message}`)
-            } else {
-                toast.error(`${data?.payload?.message}`)
-            }
-        })
+        if(Data?._id){
+            dispatch(UpdateProductThunk({Data: formData, Id: Data?._id})).then((data) => {
+                if (data?.payload?.success) {
+                    setOpenForm(false)
+                    dispatch(FetchProductsThunk())
+                    toast.success(`${data?.payload?.message}`)
+                } else {
+                    toast.error(`${data?.payload?.message}`)
+                }
+            })
+        }else{
+            dispatch(AddProductThunk(formData)).then((data) => {
+                if (data?.payload?.success) {
+                    setOpenForm(false)
+                    dispatch(FetchProductsThunk())
+                    toast.success(`${data?.payload?.message}`)
+                } else {
+                    toast.error(`${data?.payload?.message}`)
+                }
+            })
+        }
     }
+
+    console.log("Form", formData)
 
     return (
         <Sheet open={OpenForm} onOpenChange={setOpenForm}>

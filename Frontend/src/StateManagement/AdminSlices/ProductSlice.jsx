@@ -18,6 +18,14 @@ export const FetchProductsThunk = createAsyncThunk(
     }
 )
 
+export const UpdateProductThunk = createAsyncThunk(
+    "/product/UpdateProductThunk",
+    async({Data, Id}) => {
+        const response = await axios.put(`http://localhost:5000/product/update-product/${Id}`, Data);
+        return response?.data
+    }
+)
+
 const ProductSlice = createSlice(
     {
         name: "ProductSlice",
