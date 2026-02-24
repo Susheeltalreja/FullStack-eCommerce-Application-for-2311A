@@ -10,6 +10,6 @@ const route = express.Router();
 route.post('/upload', ProductUploads.single("ProductImage"), GenerateImageResponse)
 route.post("/add-product", AddProduct);
 route.get("/get-product", fetchProducts);
-route.put("/update-product", UpdateProducts);
+route.put("/update-product/:id", UpdateProducts);
 
 module.exports = route
