@@ -26,6 +26,14 @@ export const UpdateProductThunk = createAsyncThunk(
     }
 )
 
+export const DeleteProductThunk = createAsyncThunk(
+    "/product/DeleteProductThunk",
+    async(id) => {
+        const response = await axios.delete(`http://localhost:5000/product/delete-product/${id}`);
+        return response?.data
+    }
+)
+
 const ProductSlice = createSlice(
     {
         name: "ProductSlice",

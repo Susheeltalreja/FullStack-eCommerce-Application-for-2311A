@@ -94,6 +94,7 @@ function AddProductForm({ OpenForm, setOpenForm, Data }) {
                 if (data?.payload?.success) {
                     setOpenForm(false)
                     dispatch(FetchProductsThunk())
+                    setFormData({})
                     toast.success(`${data?.payload?.message}`)
                 } else {
                     toast.error(`${data?.payload?.message}`)
@@ -104,6 +105,7 @@ function AddProductForm({ OpenForm, setOpenForm, Data }) {
                 if (data?.payload?.success) {
                     setOpenForm(false)
                     dispatch(FetchProductsThunk())
+                    setFormData({})
                     toast.success(`${data?.payload?.message}`)
                 } else {
                     toast.error(`${data?.payload?.message}`)

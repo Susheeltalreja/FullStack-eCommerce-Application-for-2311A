@@ -1,6 +1,23 @@
+import { DeleteProductThunk, FetchProductsThunk } from '@/StateManagement/AdminSlices/ProductSlice';
 import React from 'react'
+import { useDispatch } from 'react-redux'
+import { toast } from 'sonner';
 
 function ProductCards({ product, setOpenForm, setData }) {
+
+  const dispatch = useDispatch();
+
+  function HandleDelete(Data){
+    dispatch(DeleteProductThunk(Data?._id)).then((d) => {
+      if(d?.payload?.success){
+        dispatch(FetchProductsThunk())
+        toast.success(`${d?.payload?.message}`)
+      }else{
+        toast.error(`${d?.payload?.message}`)
+      }
+    });
+  }
+
   return (
     <div className='group relative border border-gray-200 bg-white space-y-4 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:border-orange-500'>
       
@@ -41,7 +58,9 @@ function ProductCards({ product, setOpenForm, setData }) {
         >
           Edit
         </button>
-        <button className='flex-1 bg-black text-white py-2 rounded-lg font-bold transition-all duration-200 hover:bg-gray-800 active:scale-95 cursor-pointer'>
+        <button className='flex-1 bg-black text-white py-2 rounded-lg font-bold transition-all duration-200 hover:bg-gray-800 active:scale-95 cursor-pointer'
+        onClick={() => HandleDelete(product)}
+        >
           Delete
         </button>
       </div>
