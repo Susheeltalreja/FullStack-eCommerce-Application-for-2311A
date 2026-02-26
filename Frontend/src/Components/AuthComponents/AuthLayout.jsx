@@ -12,7 +12,7 @@ function AuthLayout() {
         </div>
       </div>
       <div className=" bg-white md:px-10 px-5 relative flex flex-col justify-center items-center w-full ">
-        <div className="md:w-[70%] w-full">
+        <div className="md:w-[90%] w-full">
         <Outlet />
         </div>
         <div className="absolute text-gray-400 bottom-10">

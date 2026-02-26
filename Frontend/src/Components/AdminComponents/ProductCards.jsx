@@ -15,10 +15,13 @@ function ProductCards({ product, setOpenForm, setData }) {
 
       {/* Product Details */}
       <div className="px-4 space-y-3">
-        <div className="flex justify-between items-start">
+        <div className="flex justify-between items-center">
           <h1 className='font-black text-black text-xl uppercase tracking-tight'>{product.ProductName}</h1>
-          <span className='text-orange-600 font-black text-lg'>
+          <span className={`text-orange-600 font-black text-sm ${product.ProductSalePrice ? "line-through" : ""}`}>
             Rs. {product.ProductPrice}
+          </span>
+          <span className={`text-orange-600 font-black text-sm ${product.ProductSalePrice ? "block" : "hidden"}`}>
+            Rs. {product.ProductSalePrice}
           </span>
         </div>
 
