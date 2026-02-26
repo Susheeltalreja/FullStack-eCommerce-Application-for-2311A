@@ -141,4 +141,32 @@ const UpdateProducts = async (req, res) => {
     }
 }
 
-module.exports = { GenerateImageResponse, AddProduct, fetchProducts, UpdateProducts };
+const DeleteProduct = async(req, res) => {
+    try{
+        const ProductId = req.params.id;
+        const ProductData = await ProductModel.findById(ProductId)
+        if(!ProductData){
+            return res.status(400).json({
+                success: false,
+                message: "Product not found"
+            })
+        }
+        const LocalAddress = path.join("Uploads", ProductData.ProductImage);
+        if(fs.existsSync(LocalAddress)){
+            fs.unlinkSync(LocalAddress)
+        }
+        await ProductModel.findByIdAndDelete(ProductId);
+        return res.status(200).json({
+            success: true,
+            message: "Product deleted successfully"
+        })
+    }catch(e){
+        console.log(`Error: ${e}`);
+        return res.status(500).json({
+            success: false,
+            message: "Server issue"
+        })
+    }
+}
+
+module.exports = { GenerateImageResponse, AddProduct, fetchProducts, UpdateProducts, DeleteProduct };

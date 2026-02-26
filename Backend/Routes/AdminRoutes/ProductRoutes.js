@@ -1,6 +1,6 @@
 const express = require('express');
 
-const {GenerateImageResponse, AddProduct, fetchProducts, UpdateProducts} = require("../../Controllers/AdminControllers/ProductController");
+const {GenerateImageResponse, AddProduct, fetchProducts, UpdateProducts, DeleteProduct} = require("../../Controllers/AdminControllers/ProductController");
 
 //multer storage
 const ProductUploads = require('../../Multer/ProductStorage');
@@ -11,5 +11,6 @@ route.post('/upload', ProductUploads.single("ProductImage"), GenerateImageRespon
 route.post("/add-product", AddProduct);
 route.get("/get-product", fetchProducts);
 route.put("/update-product/:id", UpdateProducts);
+route.delete("/delete-product/:id", DeleteProduct)
 
 module.exports = route
