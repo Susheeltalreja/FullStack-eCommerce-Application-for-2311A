@@ -21,9 +21,7 @@ export const AddBrandThunk = createAsyncThunk(
 export const FetchBrandThunk = createAsyncThunk(
     "/brand/FetchBrandThunk",
     async() => {
-        const response = await axios.get("http://localhost:5000/cb/get-brand", {
-            withCredentials: true
-        });
+        const response = await axios.get("http://localhost:5000/cb/get-brand");
         return response?.data;
     }
 );
@@ -62,9 +60,7 @@ export const AddCategoryThunk = createAsyncThunk(
 export const FetchCategoryThunk = createAsyncThunk(
     "/Category/FetchCategoryThunk",
     async() => {
-        const response = await axios.get("http://localhost:5000/cb/get-category", {
-            withCredentials: true
-        });
+        const response = await axios.get("http://localhost:5000/cb/get-category");
         return response?.data;
     }
 )
