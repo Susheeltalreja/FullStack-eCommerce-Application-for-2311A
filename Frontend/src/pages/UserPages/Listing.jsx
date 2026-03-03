@@ -3,7 +3,8 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuLabel
 import Filter from '@/Components/UserComponents/Filter'
 import UserCard from '@/Components/UserComponents/UserCard'
 import { ArrowUpDown } from 'lucide-react'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 
 function Listing() {
 
@@ -25,12 +26,22 @@ function Listing() {
       }
     }
     setFilters(NewOption)
-    console.log(NewOption);
+    sessionStorage.setItem("Filters", JSON.stringify(NewOption));
   }
+
+  useEffect(() => {
+    setFilters(JSON.parse(sessionStorage.getItem("Filters")) || {})
+  }, [])
+
+  const [SearchParams, setSearchParams] = useSearchParams();
+
+  useEffect(() => {
+    setSearchParams(new URLSearchParams(Filters))
+  }, [Filters])
 
   return (
     <div className="grid md:grid-cols-[300px_1fr] grid-cols-1 gap-2 py-30 px-5">
-      <Filter hanldeFilters={hanldeFilters}/>
+      <Filter hanldeFilters={hanldeFilters} filters={Filters}/>
       <div className=" space-y-3 ">
         <div className="border h-16 rounded-lg flex justify-between items-center px-4">
           <div className="">Total: 10</div>

@@ -4,7 +4,7 @@ import { Label } from '../ui/label'
 import { useDispatch, useSelector } from 'react-redux'
 import { FetchBrandThunk, FetchCategoryThunk } from '@/StateManagement/AdminSlices/BrandCategorySlice';
 
-function Filter({hanldeFilters}) {
+function Filter({hanldeFilters, filters}) {
 
   const dispatch = useDispatch();
   useEffect(() => {
@@ -26,6 +26,7 @@ function Filter({hanldeFilters}) {
               Category.map((item) => (
                 <div className="flex gap-2 p-2">
                   <Checkbox
+                  checked={filters?.Category?.includes(item.CategoryName)}
                   onCheckedChange={() => hanldeFilters("Category",item.CategoryName)}
                   id={item.CategoryName} />
                   <Label htmlFor={item.CategoryName}>{item.CategoryName}</Label>
@@ -43,6 +44,7 @@ function Filter({hanldeFilters}) {
               Brands.map((item) => (
                 <div className="flex gap-2 p-2">
                   <Checkbox 
+                  checked={filters?.Brand?.includes(item.BrandName)}
                   onCheckedChange={() => hanldeFilters("Brand",item.BrandName)}
                   id={item.BrandName} />
                   <Label htmlFor={item.BrandName}>{item.BrandName}</Label>

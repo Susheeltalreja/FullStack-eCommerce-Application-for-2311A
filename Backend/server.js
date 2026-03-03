@@ -15,6 +15,9 @@ const AuthRoutes = require("./Routes/AuthRoutes");
 const BrandCategoryRoute = require('./Routes/AdminRoutes/BrandCategoryRoutes');
 const ProductRoutes = require("./Routes/AdminRoutes/ProductRoutes");
 
+//UserRoutes
+const UserProductRoutes = require("./Routes/UserRoutes/ProductRoutes");
+
 mongoose.connect(process.env.MONGOOSE_URL)
 .then(() => console.log("Mongoose Connected succesffully"))
 .catch((e) => console.log(`Error: ${e}`));
@@ -40,6 +43,6 @@ app.use(cors(
 app.use("/auth", AuthRoutes);
 app.use("/cb", BrandCategoryRoute);
 app.use("/product", ProductRoutes);
-
+app.use("/user/product", UserProductRoutes);
 app.listen(Port, console.log(`server is listen on ${Port}`));
 
