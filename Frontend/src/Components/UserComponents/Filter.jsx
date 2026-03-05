@@ -17,7 +17,7 @@ function Filter({hanldeFilters, filters}) {
   // console.log("category:", Category);
 
   return (
-    <div className='md:h-100 h-full border-r'>
+    <div className='h-full border-r'>
       <div className="space-y-3">
         <div className="font-bold p-2 border-b border-zinc-400">Category</div>
         <div className="">

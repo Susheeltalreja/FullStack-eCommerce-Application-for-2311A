@@ -4,6 +4,6 @@ const {ReadProducts} = require("../../Controllers/UserControllers/ProductControl
 
 const route = express.Router();
 
-route.post("/fetch-product", ReadProducts)
+route.get("/fetch-product", ReadProducts)
 
 module.exports = route;

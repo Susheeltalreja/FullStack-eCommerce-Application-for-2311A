@@ -2,8 +2,10 @@ import { Button } from '@/Components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuLabel, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuTrigger } from '@/Components/ui/dropdown-menu'
 import Filter from '@/Components/UserComponents/Filter'
 import UserCard from '@/Components/UserComponents/UserCard'
+import { UserProductThunk } from '@/StateManagement/UserSlices/UserProductSlice'
 import { ArrowUpDown } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { useSearchParams } from 'react-router-dom'
 
 function Listing() {
@@ -39,6 +41,16 @@ function Listing() {
     setSearchParams(new URLSearchParams(Filters))
   }, [Filters])
 
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(UserProductThunk({Filters, Sort: SortProduct}))
+  }, [Filters, SortProduct])
+
+  const {Products} = useSelector(st => st.UserProduct)
+
+  console.log("Products: ", Products)
+
   return (
     <div className="grid md:grid-cols-[300px_1fr] grid-cols-1 gap-2 py-30 px-5">
       <Filter hanldeFilters={hanldeFilters} filters={Filters}/>
@@ -65,12 +77,11 @@ function Listing() {
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
-          <UserCard />
-          <UserCard />
-          <UserCard />
-          <UserCard />
-          <UserCard />
-          <UserCard />
+          {
+            Products && Products.length > 0 ? (
+              Products.map((Item) => (<UserCard Product={Item}/>))
+            ) : (<p>No Products found</p>)
+          }
         </div>
       </div>
     </div>
