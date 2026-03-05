@@ -56,7 +56,7 @@ function Listing() {
       <Filter hanldeFilters={hanldeFilters} filters={Filters}/>
       <div className=" space-y-3 ">
         <div className="border h-16 rounded-lg flex justify-between items-center px-4">
-          <div className="">Total: 10</div>
+          <div className="">Total: {Products.length}</div>
           <div className="">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
