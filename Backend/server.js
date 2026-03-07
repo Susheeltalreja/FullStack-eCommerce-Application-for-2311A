@@ -17,7 +17,7 @@ const ProductRoutes = require("./Routes/AdminRoutes/ProductRoutes");
 
 //UserRoutes
 const UserProductRoutes = require("./Routes/UserRoutes/ProductRoutes");
-
+const CartRoutes = require("./Routes/UserRoutes/CartRoutes");
 mongoose.connect(process.env.MONGOOSE_URL)
 .then(() => console.log("Mongoose Connected succesffully"))
 .catch((e) => console.log(`Error: ${e}`));
@@ -44,5 +44,6 @@ app.use("/auth", AuthRoutes);
 app.use("/cb", BrandCategoryRoute);
 app.use("/product", ProductRoutes);
 app.use("/user/product", UserProductRoutes);
+app.use("/user/cart", CartRoutes)
 app.listen(Port, console.log(`server is listen on ${Port}`));
 
