@@ -4,12 +4,40 @@ import Image from "../../Images/AuthImage.jpg"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog'
 import { Button } from '../ui/button';
 import { Minus, Plus } from 'lucide-react';
+import { useDispatch, useSelector } from 'react-redux';
+import { AddToCartThunk } from '@/StateManagement/UserSlices/CartSlice';
+import { toast } from 'sonner';
 
 function UserCard({ Product }) {
 
     const [Open, setOpen] = useState(false);
 
     const [Quantity, setQuantity] = useState(1);
+
+    const { User } = useSelector(st => st.Auth)
+
+    const dispatch = useDispatch();
+
+    function HandleCart() {
+        if (User?.ID) {
+            let data = {
+                UserId: User?.ID,
+                ProductId: Product?._id,
+                Quantity: Quantity
+            }
+            dispatch(AddToCartThunk(data)).then((res) => {
+                if (res?.payload?.success) {
+                    toast.success(`${res?.payload?.message}`)
+                } else {
+                    toast.error(`${res?.payload?.message}`)
+                }
+            }).catch((e) => {
+                console.log(e)
+            })
+        }else{
+            toast.error("User must be logged in")
+        }
+    }
 
     return (
         <div className="">
@@ -47,15 +75,18 @@ function UserCard({ Product }) {
                         <div className="flex justify-between items-center">
                             <div className="flex gap-2 items-center">
                                 <Button variant="outline" className="cursor-pointer"
-                                onClick={() => setQuantity(Quantity + 1)}
+                                    onClick={() => setQuantity(Quantity + 1)}
                                 ><Plus /></Button>
                                 <span className='px-4 py-2 border rounded-lg'>{Quantity}</span>
                                 <Button variant="outline" className="cursor-pointer"
-                                onClick={() => {if(Quantity > 1) {setQuantity(Quantity - 1)}}}
+                                    onClick={() => { if (Quantity > 1) { setQuantity(Quantity - 1) } }}
                                 ><Minus /></Button>
                             </div>
                             <div className="">
-                                <Button className="cursor-pointer">Add To Cart</Button>
+                                <Button className="cursor-pointer" onClick={() => {
+                                    HandleCart()
+                                    setOpen(false)
+                                }}>Add To Cart</Button>
                             </div>
                         </div>
                     </div>
@@ -94,6 +125,7 @@ function UserCard({ Product }) {
                 {/* Action Buttons */}
                 <div className="flex gap-2 px-4 pb-4">
                     <button className='flex-1 bg-black text-white py-2 rounded-lg font-bold transition-all duration-200 hover:bg-gray-800 active:scale-95 cursor-pointer'
+                        onClick={() => HandleCart()}
                     >
                         Add To Cart
                     </button>
