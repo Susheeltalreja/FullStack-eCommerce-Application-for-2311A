@@ -2,9 +2,10 @@ import React, { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { Button } from '../ui/button'
 import { useDispatch, useSelector } from 'react-redux'
-import { Ham, Hamburger, LogOutIcon } from 'lucide-react';
+import { Ham, Hamburger, LogOutIcon, ShoppingCart } from 'lucide-react';
 import { LogoutUser } from '@/StateManagement/Authentication/Slice';
 import { toast } from 'sonner';
+import Cart from './Cart';
 
 
 
@@ -50,16 +51,21 @@ function Navbar() {
   const location = useLocation();
 
   const [ToggleNav, setToggleNav] = useState(false);
-  function HandleToggle(){
-    if(ToggleNav){
+  function HandleToggle() {
+    if (ToggleNav) {
       setToggleNav(false)
-    }else{
+    } else {
       setToggleNav(true)
     }
   }
 
+  const [OpenCart, setOpenCart] = useState(false)
+
   return (
     <div className="w-screen flex justify-center items-center relative">
+
+      {/* Cart */}
+      <Cart OpenCart={OpenCart} setOpenCart={setOpenCart}/>
       {/* Mobile device navbar  */}
       <ResponsiveNavbar ToggleNav={ToggleNav} setToggleNav={setToggleNav} Auth={isAuth} Logout={handleLogout} />
       {/* {Big navbar} */}
@@ -77,7 +83,16 @@ function Navbar() {
         </div>
         <div className="md:block hidden">
           {
-            isAuth ? <Button className="cursor-pointer" onClick={() => handleLogout()}>Logout <LogOutIcon /></Button> :
+            isAuth ? <div className="flex gap-2">
+              <button className={`cursor-pointer px-3 py-2 flex gap-2 rounded-lg font-bold hover:scale-110 transition
+                ${location.pathname.includes("/user/list") ? "bg-white text-black" : "bg-black text-white"}
+                `}
+                onClick={() => setOpenCart(true)}
+                ><ShoppingCart /></button>
+              <button className={`cursor-pointer px-4 py-2 flex gap-2 rounded-lg font-bold hover:scale-110 transition
+                ${location.pathname.includes("/user/list") ? "bg-white text-black" : "bg-black text-white"}
+                `} onClick={() => handleLogout()}>Logout <LogOutIcon /></button>
+            </div> :
               (<div className="space-x-2">
                 <Link to="/auth/login"><button className="cursor-pointer bg-orange-400 px-4 py-2 rounded-xl font-bold hover:scale-110 transition">SignIn</button></Link>
                 <Link to="/auth/register"><button className={`cursor-pointer px-4 py-2 rounded-xl font-bold hover:scale-110 transition
@@ -87,10 +102,10 @@ function Navbar() {
           }
         </div>
         <div className="md:hidden block">
-          <Button variant="outline" className="text-black cursor-pointer" onClick={() => HandleToggle()}><Hamburger size={40}/></Button>
+          <Button variant="outline" className="text-black cursor-pointer" onClick={() => HandleToggle()}><Hamburger size={40} /></Button>
         </div>
       </div>
-    </div>
+    </div >
   )
 }
 
