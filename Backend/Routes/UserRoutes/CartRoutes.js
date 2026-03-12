@@ -8,5 +8,5 @@ route.post("/add", AddToCart)
 route.get("/fetch-cart/:id", FetchCart)
 route.post("/increase", IncreaseQuantity)
 route.post('/decrease', DecreaseQuantity)
-route.post('/remove', RemoveQuantity)
+route.delete('/remove', RemoveQuantity)
 module.exports = route;

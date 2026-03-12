@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog'
 import { Button } from '../ui/button';
 import { Minus, Plus } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
-import { AddToCartThunk } from '@/StateManagement/UserSlices/CartSlice';
+import { AddToCartThunk, FetchCartThunk } from '@/StateManagement/UserSlices/CartSlice';
 import { toast } from 'sonner';
 
 function UserCard({ Product }) {
@@ -27,6 +27,7 @@ function UserCard({ Product }) {
             }
             dispatch(AddToCartThunk(data)).then((res) => {
                 if (res?.payload?.success) {
+                    dispatch(FetchCartThunk({id: User?.ID}))
                     toast.success(`${res?.payload?.message}`)
                 } else {
                     toast.error(`${res?.payload?.message}`)
@@ -60,7 +61,7 @@ function UserCard({ Product }) {
                             <h1 className='font-black text-black text-xl uppercase tracking-tight'>{Product.ProductName}</h1>
                             <div className="flex gap-2">
                                 <span className={`text-orange-600 font-black text-md ${Product.ProductSalePrice ? "line-through" : ""}`}>
-                                    Rs. 5000
+                                    Rs. {Product.ProductPrice}
                                 </span>
                                 <span className={`text-orange-600 font-black text-md ${Product.ProductSalePrice ? "block" : "hidden"}`}>
                                     Rs. {Product.ProductSalePrice}
@@ -109,7 +110,7 @@ function UserCard({ Product }) {
                     <div className="flex justify-between items-center">
                         <h1 className='font-black text-black text-xl uppercase tracking-tight'>{Product.ProductName}</h1>
                         <span className={`text-orange-600 font-black text-sm ${Product.ProductSalePrice ? "line-through text-[10px]" : ""}`}>
-                            Rs. 5000
+                            Rs. {Product.ProductPrice}
                         </span>
                         <span className={`text-orange-600 font-black text-sm ${Product.ProductSalePrice ? "block" : "hidden"}`}>
                             Rs. {Product.ProductSalePrice}
