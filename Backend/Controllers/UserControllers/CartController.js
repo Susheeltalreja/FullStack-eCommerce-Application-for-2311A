@@ -26,10 +26,10 @@ const AddToCart = async (req, res) => {
         const FindCart = await CartModel.findOne({ UserId });
         if (FindCart) {
             const FindIndex = FindCart.Product.findIndex(Item => Item.ProductId.toString() === ProductId)
-            if(FindIndex > -1){
+            if (FindIndex > -1) {
                 FindCart.Product[FindIndex].Quantity += Quantity
-            }else{
-                FindCart.Product.push({ProductId, Quantity})
+            } else {
+                FindCart.Product.push({ ProductId, Quantity })
             }
             await FindCart.save();
         } else {
@@ -53,4 +53,114 @@ const AddToCart = async (req, res) => {
     }
 }
 
-module.exports = { AddToCart }
+const FetchCart = async (req, res) => {
+    try {
+        const UserId = req.params.id;
+        const FindCart = await CartModel.findOne({ UserId }).populate("Product.ProductId");
+        return res.status(200).json({
+            success: true,
+            Data: FindCart
+        })
+    } catch (e) {
+        return res.status(500).json({
+            success: false,
+            message: "Server issue"
+        })
+    }
+}
+
+const IncreaseQuantity = async (req, res) => {
+
+    const { UserId, ProductId } = req.body;
+
+    try {
+        const findCart = await CartModel.findOne({ UserId });
+        if (!findCart) {
+            return res.json({
+                success: false,
+                message: "Cart not found"
+            })
+        }
+        const FindIndex = findCart.Product.findIndex(item => item.ProductId.toString() === ProductId);
+        if (FindIndex > -1) {
+            findCart.Product[FindIndex].Quantity += 1;
+        }
+        await findCart.save();
+
+        return res.status(200).json({
+            success: true
+        })
+
+    } catch (e) {
+        return res.status(500).json({
+            success: false,
+            message: "Server issue"
+        })
+    }
+}
+const DecreaseQuantity = async (req, res) => {
+
+    const { UserId, ProductId } = req.body;
+
+    try {
+        const findCart = await CartModel.findOne({ UserId });
+        if (!findCart) {
+            return res.json({
+                success: false,
+                message: "Cart not found"
+            })
+        }
+
+        const FindIndex = findCart.Product.findIndex(item => item.ProductId.toString() === ProductId);
+        if (FindIndex > -1) {
+            if (findCart.Product[FindIndex].Quantity > 1) {
+                findCart.Product[FindIndex].Quantity -= 1;
+            }
+        }
+        await findCart.save();
+        return res.status(200).json({
+            success: true
+        })
+
+    } catch (e) {
+        return res.status(500).json({
+            success: false,
+            message: "Server issue"
+        })
+    }
+}
+const RemoveQuantity = async (req, res) => {
+
+    const { UserId, ProductId } = req.body;
+
+    try {
+        const findCart = await CartModel.findOne({ UserId });
+        if (!findCart) {
+            return res.json({
+                success: false,
+                message: "Cart not found"
+            })
+        }
+
+        const FindIndex = findCart.Product.findIndex(item => item.ProductId.toString() === ProductId);
+        if (FindIndex > -1) {
+            findCart.Product.splice(FindIndex, 1)
+        }
+
+        await findCart.save();
+
+        return res.status(200).json({
+            success: true
+        })
+
+    } catch (e) {
+        return res.status(500).json({
+            success: false,
+            message: "Server issue"
+        })
+    }
+}
+
+
+
+module.exports = { AddToCart, FetchCart, IncreaseQuantity, DecreaseQuantity, RemoveQuantity }
