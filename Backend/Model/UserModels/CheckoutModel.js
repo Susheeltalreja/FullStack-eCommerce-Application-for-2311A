@@ -33,7 +33,7 @@ const CheckoutSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    DeliverInst: {
+    DeliveryInst: {
         type: String
     },
     Products: [

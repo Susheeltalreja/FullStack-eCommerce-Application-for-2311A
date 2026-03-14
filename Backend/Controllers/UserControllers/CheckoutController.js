@@ -29,7 +29,7 @@ const Checkout = async (req, res) => {
             })
         }
         const NewOrder = new CheckoutModel({
-            UserId, FullName, Contact, Address, City, PostalCode, Email,
+            UserId, FullName, Contact, Address, City, PostalCode, Email,LandMark,
             Products: FindCart.Product
         })
 
