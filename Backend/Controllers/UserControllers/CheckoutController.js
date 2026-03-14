@@ -7,9 +7,9 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 const Checkout = async (req, res) => {
-    const { UserId, FullName, Contact, Address, City, PostalCode , Email} = req.body;
+    const { UserId, FullName, Contact, Address, City, PostalCode , Email, LandMark} = req.body;
     try {
-        if (!UserId || !FullName || !Contact || !Address || !City || !PostalCode) {
+        if (!UserId || !FullName || !Contact || !Address || !City || !PostalCode || !LandMark || !Email) {
             return res.json({
                 success: false,
                 message: "All fields are required"

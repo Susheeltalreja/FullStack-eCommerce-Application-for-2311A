@@ -29,6 +29,10 @@ const CheckoutSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    LandMark: {
+        type: String,
+        required: true
+    },
     DeliverInst: {
         type: String
     },
