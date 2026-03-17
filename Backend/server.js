@@ -14,7 +14,7 @@ const AuthRoutes = require("./Routes/AuthRoutes");
 //AdminRoutes
 const BrandCategoryRoute = require('./Routes/AdminRoutes/BrandCategoryRoutes');
 const ProductRoutes = require("./Routes/AdminRoutes/ProductRoutes");
-
+const OrderRoutes = require("./Routes/AdminRoutes/OrderRoutes");
 //UserRoutes
 const UserProductRoutes = require("./Routes/UserRoutes/ProductRoutes");
 const CartRoutes = require("./Routes/UserRoutes/CartRoutes");
@@ -48,6 +48,7 @@ app.use("/product", ProductRoutes);
 app.use("/user/product", UserProductRoutes);
 app.use("/user/cart", CartRoutes)
 app.use("/user/checkout", CheckoutRoutes);
+app.use("/admin/orders", OrderRoutes);
 
 app.listen(Port, console.log(`server is listen on ${Port}`));
 
