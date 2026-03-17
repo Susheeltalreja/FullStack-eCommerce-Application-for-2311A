@@ -7,9 +7,9 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 const Checkout = async (req, res) => {
-    const { UserId, FullName, Contact, Address, City, PostalCode , Email, LandMark} = req.body;
+    const { UserId, FullName, Contact, Address, City, PostalCode , Email, LandMark, Total} = req.body;
     try {
-        if (!UserId || !FullName || !Contact || !Address || !City || !PostalCode || !LandMark || !Email) {
+        if (!UserId || !FullName || !Contact || !Address || !City || !PostalCode || !LandMark || !Email || !Total) {
             return res.json({
                 success: false,
                 message: "All fields are required"
@@ -29,7 +29,7 @@ const Checkout = async (req, res) => {
             })
         }
         const NewOrder = new CheckoutModel({
-            UserId, FullName, Contact, Address, City, PostalCode, Email,LandMark,
+            UserId, FullName, Contact, Address, City, PostalCode, Email,LandMark, Total,
             Products: FindCart.Product
         })
 

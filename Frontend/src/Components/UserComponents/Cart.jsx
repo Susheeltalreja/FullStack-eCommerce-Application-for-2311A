@@ -59,7 +59,8 @@ function Cart({ OpenCart, setOpenCart }) {
 
     async function HandleCheckout(){
         try{
-            const response = await axios.post("http://localhost:5000/user/checkout/final", FormData);
+            let data = {...FormData, Total}
+            const response = await axios.post("http://localhost:5000/user/checkout/final", data);
             if(response?.data?.success){
                 setOpenCart(false)
                 setCheckout(false)

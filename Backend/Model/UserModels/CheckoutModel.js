@@ -36,6 +36,14 @@ const CheckoutSchema = new mongoose.Schema({
     DeliveryInst: {
         type: String
     },
+    Status: {
+        type: String,
+        default: "pending"
+    },
+    Total: {
+        type: Number,
+        required: true
+    },
     Products: [
         {
             ProductId: {
