@@ -9,6 +9,14 @@ export const FetchOrdersThunk = createAsyncThunk(
     }
 )
 
+export const UpdateStatusThunk = createAsyncThunk(
+    "/admin/UpdateStatusThunk",
+    async({id, Data}) => {
+        const response = await axios.put(`http://localhost:5000/admin/orders/update-order/${id}`, Data);
+        return response?.data;
+    }
+)
+
 const OrderSlice = createSlice({
     name: "OrderSlice",
     initialState: {

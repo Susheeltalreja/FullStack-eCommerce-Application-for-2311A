@@ -1,6 +1,7 @@
-import { FetchOrdersThunk } from '@/StateManagement/AdminSlices/OrdersSlice';
+import { FetchOrdersThunk, UpdateStatusThunk } from '@/StateManagement/AdminSlices/OrdersSlice';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'sonner';
 
 const CheckoutComponent = () => {
   const [expandedId, setExpandedId] = useState(null);
@@ -13,7 +14,18 @@ const CheckoutComponent = () => {
 
   const { Orders } = useSelector(st => st.Orders);
 
-  console.log(Orders);
+  const [Status, setStatus] = useState("pending");
+
+  function HandleStatus(id){
+    dispatch(UpdateStatusThunk({id: id, Data: {Status}})).then((res) => {
+      if(res?.payload?.success){
+        dispatch(FetchOrdersThunk())
+        toast.success(`${res?.payload?.message}`)
+      }else{
+        toast.error(`${res?.payload?.message}`)
+      }
+    })
+  }
 
   return (
     <div className="w-full max-w-5xl mx-auto space-y-4">
@@ -55,7 +67,7 @@ const CheckoutComponent = () => {
                   <span className="font-bold text-slate-700">Rs. {order?.Total}</span>
                   <span className={`
                     px-3 py-1 rounded-full text-xs font-medium transition-colors
-                    ${order.status === 'Shipped' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}
+                    ${order.Status === 'Shipped' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}
                   `}>
                     {order?.Status}
                   </span>
@@ -96,13 +108,17 @@ const CheckoutComponent = () => {
                     <div className="w-full md:w-64 bg-white p-4 rounded-lg border border-slate-200 shadow-inner">
                       <label className="block text-xs font-bold text-slate-500 mb-2 uppercase">Update Status</label>
                       <div className="flex flex-col gap-2">
-                        <select className="w-full text-sm border-slate-200 rounded-md focus:ring-blue-500 focus:border-blue-500 p-2 outline-none bg-slate-50">
-                          <option>Pending</option>
-                          <option>Processing</option>
-                          <option>Shipped</option>
-                          <option>Delivered</option>
+                        <select className="w-full text-sm border-slate-200 rounded-md focus:ring-blue-500 focus:border-blue-500 p-2 outline-none bg-slate-50"
+                        onChange={(e) => setStatus(e.target.value)}
+                        >
+                          <option value="Pending">Pending</option>
+                          <option value="Processing">Processing</option>
+                          <option value="Shipped">Shipped</option>
+                          <option value="Delivered">Delivered</option>
                         </select>
-                        <button className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold py-2 px-4 rounded-md transition-all active:scale-95">
+                        <button className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold py-2 px-4 rounded-md transition-all active:scale-95"
+                        onClick={() => HandleStatus(order?._id)}
+                        >
                           Save Update
                         </button>
                       </div>
