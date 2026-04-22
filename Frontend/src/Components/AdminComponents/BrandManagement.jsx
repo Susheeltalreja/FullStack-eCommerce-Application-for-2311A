@@ -1,181 +1,171 @@
-import React, { useEffect, useState } from 'react';
-import { Button } from '../ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
-import { Input } from '../ui/input';
+import React, { useEffect, useState } from 'react'
+import { Button } from '../ui/button'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog'
+import { Input } from '../ui/input'
 import { useDispatch, useSelector } from 'react-redux';
 import { AddBrandThunk, DeleteBrandThunk, FetchBrandThunk, UpdateBrandThunk } from '@/StateManagement/AdminSlices/BrandCategorySlice';
 import { toast } from 'sonner';
 import axios from 'axios';
-import { Edit, Trash2, Plus, Search, Loader2 } from 'lucide-react';
 
 function BrandManagement() {
-    const dispatch = useDispatch();
-    const { isLoading, Brands } = useSelector(st => st.BrandCategory);
 
     const [openDialog, setOpenDialog] = useState(false);
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [brandName, setBrandName] = useState("");
-    const [selectedBrand, setSelectedBrand] = useState(null);
 
-    const [searchQuery, setSearchQuery] = useState("");
-    const [searchResult, setSearchResult] = useState([]);
+    const [brand, setBrand] = useState("");
+    const [BrandDetails, setBrandDetails] = useState(null);
+
+    const [SearchBrand, setSearchBrand] = useState("");
+    const [SearchResult, setSearchResult] = useState([]);
+    // console.log("Brand: ", brand);
+
+    const dispatch = useDispatch();
+
+    function hanldeBrands() {
+        if (BrandDetails?._id) {
+            dispatch(UpdateBrandThunk({ id: BrandDetails?._id, data: { BrandName: brand } })).then((res) => {
+                if (res?.payload?.success) {
+                    setOpenDialog(false);
+                    dispatch(FetchBrandThunk());
+                    toast.success(`${res?.payload?.message}`);
+                } else {
+                    toast.error(`${res?.payload?.message}`);
+                }
+            })
+        } else {
+            dispatch(AddBrandThunk({ BrandName: brand })).then((res) => {
+                if (res?.payload?.success) {
+                    setOpenDialog(false);
+                    dispatch(FetchBrandThunk());
+                    toast.success(`${res?.payload?.message}`);
+                } else {
+                    toast.error(`${res?.payload?.message}`);
+                }
+            });
+        }
+    }
 
     useEffect(() => {
         dispatch(FetchBrandThunk());
-    }, [dispatch]);
+    }, [])
 
-    // Handle Add or Update
-    async function handleBrandSubmit() {
-        if (!brandName.trim()) return toast.error("Brand name is required");
-        
-        setIsSubmitting(true);
-        const action = selectedBrand?._id 
-            ? UpdateBrandThunk({ id: selectedBrand._id, data: { BrandName: brandName } })
-            : AddBrandThunk({ BrandName: brandName });
+    const { isLoading, Brands } = useSelector(st => st.BrandCategory)
 
-        const res = await dispatch(action);
-        
-        if (res?.payload?.success) {
-            setOpenDialog(false);
-            dispatch(FetchBrandThunk());
-            toast.success(res.payload.message);
-        } else {
-            toast.error(res?.payload?.message || "Operation failed");
-        }
-        setIsSubmitting(false);
+    // console.log("Brands: ", Brands);
+
+    function HandleOutput(item) {
+        setBrandDetails(item);
+        setBrand(item?.BrandName)
     }
+    // console.log("Brand Name: ", brand);
 
-    function handleDelete(id) {
-        dispatch(DeleteBrandThunk(id)).then((res) => {
+    function HandleDelete(item) {
+        const Id = item?._id;
+        dispatch(DeleteBrandThunk(Id)).then((res) => {
             if (res?.payload?.success) {
                 dispatch(FetchBrandThunk());
-                toast.success(res.payload.message);
+                toast.success(`${res?.payload?.message}`);
+            } else {
+                toast.error(`${res?.payload?.message}`);
             }
-        });
+        })
     }
 
-    function openEditDialog(item) {
-        setSelectedBrand(item);
-        setBrandName(item.BrandName);
-        setOpenDialog(true);
-    }
-
-    // Debouncing Search
+    //Debouncing useEffect hook
     useEffect(() => {
-        if (!searchQuery.trim()) {
-            setSearchResult([]);
+        if (!SearchBrand) {
+            setSearchResult([])
             return;
-        }
-
-        const timer = setTimeout(async () => {
-            try {
-                const response = await axios.get(`http://localhost:5000/cb/search-brand/${searchQuery}`, {
+        };
+        //Call first
+        const res = setTimeout(() => {
+            async function SearchBrandFunc() {
+                const response = await axios.get(`http://localhost:5000/cb/search-brand/${SearchBrand}`, {
                     withCredentials: true
                 });
-                setSearchResult(response?.data?.FindBrand || []);
-            } catch (err) {
-                console.error("Search error", err);
+                setSearchResult(response?.data?.FindBrand);
             }
-        }, 600); // reduced to 600ms for snappier feel
+            SearchBrandFunc();
+        }, 1000);
 
-        return () => clearTimeout(timer);
-    }, [searchQuery]);
+        return () => {
+            clearTimeout(res)
+        };
+    }, [SearchBrand])
 
-    // Determine which list to show
-    const displayBrands = searchQuery ? searchResult : Brands;
+
+    console.log("Search Result: ", SearchResult);
 
     return (
-        <div className='w-full p-6 h-full bg-white shadow-sm border rounded-3xl overflow-hidden flex flex-col'>
-            
-            {/* Header Section */}
-            <div className="flex w-full justify-between items-center md:mb-6 flex-wrap gap-2 mb-2">
-                <Button 
-                    className="rounded-xl bg-orange-500 hover:bg-orange-600"
-                    onClick={() => {
-                        setSelectedBrand(null);
-                        setBrandName("");
-                        setOpenDialog(true);
-                    }}
-                >
-                    <Plus className="mr-2 h-4 w-4" /> Add Brand
-                </Button>
-                
-                <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                    <Input 
-                        type="text" 
-                        placeholder="Search brands..." 
-                        className="w-[250px] pl-10 bg-gray-50 border-none ring-1 ring-gray-200"
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                </div>
+        <div className='w-full  p-3 h-[70%] bg-gray-100 rounded-3xl '>
+
+            <div className="flex w-full justify-between items-center">
+                <button className="cursor-pointer px-4 py-2 bg-orange-400 rounded-2xl text-white font-bold" onClick={() => {
+                    setOpenDialog(true)
+                    setBrand("")
+                    setBrandDetails(null)
+                }}>Add Brand</button>
+                <Input type="text" placeholder="Enter your brand name!" className="w-[200px] bg-white"
+                    onChange={(e) => setSearchBrand(e.target.value)}
+                />
             </div>
 
-            {/* Modal */}
             <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-                <DialogContent className="sm:max-w-[425px]">
+                {/* <Dialog> */}
+                <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>{selectedBrand ? "Update Brand" : "Add New Brand"}</DialogTitle>
+                        <DialogTitle>
+                            Brand
+                        </DialogTitle>
                     </DialogHeader>
-                    <div className="grid gap-4 py-4">
-                        <Input 
-                            placeholder="Enter brand name" 
-                            value={brandName} 
-                            onChange={(e) => setBrandName(e.target.value)} 
-                        />
-                        <Button 
-                            disabled={isSubmitting}
-                            onClick={handleBrandSubmit}
-                            className="w-full"
-                        >
-                            {isSubmitting ? <Loader2 className="animate-spin mr-2" /> : null}
-                            {selectedBrand ? "Update Brand" : "Create Brand"}
-                        </Button>
+                    <div className="space-y-2">
+                        <Input type="text" placeholder="Enter your brand Name!" value={brand} onChange={(e) => setBrand(e.target.value)} />
+                        <Button className="cursor-pointer" onClick={() => hanldeBrands()}>Add</Button>
                     </div>
                 </DialogContent>
             </Dialog>
 
-            {/* List Section */}
-            <div className="flex-1 overflow-auto space-y-2 pr-2">
-                {displayBrands && displayBrands.length > 0 ? (
-                    displayBrands.map((item, i) => (
-                        <div 
-                            key={item?._id} 
-                            className="group flex justify-between items-center px-5 py-3 rounded-2xl bg-gray-50 hover:bg-white hover:shadow-md border border-transparent hover:border-gray-100 transition-all duration-200"
-                        >
-                            <div className="flex items-center gap-4">
-                                <span className='text-xs font-mono text-gray-400'>#{i + 1}</span>
-                                <h2 className='text-sm font-semibold text-gray-700'>{item.BrandName}</h2>
-                            </div>
-                            
-                            <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <Button 
-                                    variant="outline" 
-                                    size="sm" 
-                                    className="h-8 w-8 p-0 text-blue-600 hover:text-blue-700"
-                                    onClick={() => openEditDialog(item)}
-                                >
-                                    <Edit size={16} />
-                                </Button>
-                                <Button 
-                                    variant="outline" 
-                                    size="sm" 
-                                    className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
-                                    onClick={() => handleDelete(item._id)}
-                                >
-                                    <Trash2 size={16} />
-                                </Button>
-                            </div>
-                        </div>
-                    ))
-                ) : (
-                    <div className="flex flex-col items-center justify-center h-40 text-gray-400">
-                        <p>{isLoading ? "Loading..." : "No brands found"}</p>
-                    </div>
-                )}
+            <div className="flex flex-col gap-2 w-full h-[80%] overflow-auto justify-start items-start mt-3">
+                {
+                    SearchBrand ? (
+                        SearchResult && SearchResult.length > 0 ? (
+                            SearchResult.map((items, i) => (
+                                <div className="group flex justify-between w-full items-center px-4 py-2 border-b border-gray-500 bg-gray-200" key={items?._id}>
+                                    <h1 className='text-lg font-bold'>{i + 1}</h1>
+                                    <h2 className='text-lg font-bold'>{items.BrandName}</h2>
+                                    <div className="space-x-3 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-x-4 group-hover:translate-x-0">
+                                        <button className='bg-transparent border border-blue-800 px-2 py-1 rounded-lg hover:bg-blue-500 hover:text-white cursor-pointer' onClick={() => {
+                                            setOpenDialog(true)
+                                            HandleOutput(items)
+                                        }}>Edit</button>
+                                        <button className='bg-transparent border border-red-800 px-2 py-1 rounded-lg hover:bg-red-500 hover:text-white cursor-pointer'
+                                            onClick={() => HandleDelete(items)}
+                                        >Delete</button>
+                                    </div>
+                                </div>
+                            ))
+                        ) : (<p>No brand found</p>)
+                    ) : (
+                        Brands && Brands.length > 0 ?
+                            Brands.map((items, i) => (
+                                <div className="group flex justify-between w-full items-center px-4 py-2 border-b border-gray-500 bg-gray-200" key={items?._id}>
+                                    <h1 className='text-lg font-bold'>{i + 1}</h1>
+                                    <h2 className='text-lg font-bold'>{items.BrandName}</h2>
+                                    <div className="space-x-3 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-x-4 group-hover:translate-x-0">
+                                        <button className='bg-transparent border border-blue-800 px-2 py-1 rounded-lg hover:bg-blue-500 hover:text-white cursor-pointer' onClick={() => {
+                                            setOpenDialog(true)
+                                            HandleOutput(items)
+                                        }}>Edit</button>
+                                        <button className='bg-transparent border border-red-800 px-2 py-1 rounded-lg hover:bg-red-500 hover:text-white cursor-pointer'
+                                            onClick={() => HandleDelete(items)}
+                                        >Delete</button>
+                                    </div>
+                                </div>
+                            )) : "No Brands Found"
+                    )
+                }
             </div>
         </div>
-    );
+    )
 }
 
-export default BrandManagement;
+export default BrandManagement

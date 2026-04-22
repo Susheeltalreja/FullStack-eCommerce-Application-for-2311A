@@ -1,187 +1,167 @@
-import React, { useEffect, useState } from 'react';
-import { Button } from '../ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
-import { Input } from '../ui/input';
+import React, { useEffect, useState } from 'react'
+import { Button } from '../ui/button'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog'
+import { Input } from '../ui/input'
 import { useDispatch, useSelector } from 'react-redux';
-import { 
-    AddCategoryThunk, 
-    DeleteCategoryThunk, 
-    FetchCategoryThunk, 
-    UpdateCategoryThunk 
-} from '@/StateManagement/AdminSlices/BrandCategorySlice';
+import { AddCategoryThunk, DeleteCategoryThunk, FetchCategoryThunk, UpdateCategoryThunk } from '@/StateManagement/AdminSlices/BrandCategorySlice';
 import { toast } from 'sonner';
 import axios from 'axios';
-import { Edit, Trash2, Plus, Search, Loader2 } from 'lucide-react';
-
 function CategoryManagment() {
-    const dispatch = useDispatch();
-    const { Category, isLoading } = useSelector(st => st.BrandCategory);
-
     const [openDialog, setOpenDialog] = useState(false);
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [categoryName, setCategoryName] = useState("");
-    const [selectedCategory, setSelectedCategory] = useState(null);
+    const [category, setCategory] = useState("");
+    const [CategoryDetails, setCategoryDetails] = useState(null);
 
-    const [searchQuery, setSearchQuery] = useState("");
-    const [searchResult, setSearchResult] = useState([]);
+    const [SearchCategory, setSearchCategory] = useState("");
+    const [SearchResult, setSearchResult] = useState([]);
+    // console.log("Category: ", category);
+
+    const disptach = useDispatch();
+
+    function handleCategory() {
+        if (CategoryDetails?._id) {
+            disptach(UpdateCategoryThunk({ id: CategoryDetails?._id, data: { CategoryName: category } })).then((res) => {
+                if (res?.payload?.success) {
+                    setOpenDialog(false);
+                    disptach(FetchCategoryThunk())
+                    toast.success(`${res?.payload?.message}`);
+                } else {
+                    toast.error(`${res?.payload?.message}`);
+                }
+            });
+        } else {
+            disptach(AddCategoryThunk({ CategoryName: category })).then((res) => {
+                if (res?.payload?.success) {
+                    setOpenDialog(false);
+                    disptach(FetchCategoryThunk())
+                    toast.success(`${res?.payload?.message}`);
+                } else {
+                    toast.error(`${res?.payload?.message}`);
+                }
+            });
+        }
+    }
 
     useEffect(() => {
-        dispatch(FetchCategoryThunk());
-    }, [dispatch]);
+        disptach(FetchCategoryThunk())
+    }, [])
 
-    // Combined Add/Update Logic
-    async function handleCategorySubmit() {
-        if (!categoryName.trim()) return toast.error("Category name is required");
+    const { Category, isLoading } = useSelector(st => st.BrandCategory)
+    // console.log("Categories: ", Category)
 
-        setIsSubmitting(true);
-        try {
-            const action = selectedCategory?._id 
-                ? UpdateCategoryThunk({ id: selectedCategory._id, data: { CategoryName: categoryName } })
-                : AddCategoryThunk({ CategoryName: categoryName });
-
-            const res = await dispatch(action);
-            
+    function HandleEditCategory(item) {
+        setCategoryDetails(item)
+        setCategory(item?.CategoryName)
+    }
+    function HandleDeleteCategory(item) {
+        disptach(DeleteCategoryThunk(item?._id)).then((res) => {
             if (res?.payload?.success) {
-                setOpenDialog(false);
-                dispatch(FetchCategoryThunk());
-                toast.success(res.payload.message);
+                disptach(FetchCategoryThunk());
+                toast.success(`${res?.payload?.message}`);
             } else {
-                toast.error(res?.payload?.message || "Something went wrong");
+                toast.error(`${res?.payload?.message}`);
             }
-        } finally {
-            setIsSubmitting(false);
-        }
+        })
     }
 
-    function handleDelete(id) {
-        dispatch(DeleteCategoryThunk(id)).then((res) => {
-            if (res?.payload?.success) {
-                dispatch(FetchCategoryThunk());
-                toast.success(res.payload.message);
-            }
-        });
-    }
-
-    // Debounce Search logic
     useEffect(() => {
-        if (!searchQuery.trim()) {
-            setSearchResult([]);
+        if (!SearchCategory) {
+            setSearchResult([])
             return;
-        }
+        };
 
-        const delay = setTimeout(async () => {
-            try {
-                const response = await axios.get(`http://localhost:5000/cb/search-category/${searchQuery}`, {
+        const res = setTimeout(() => {
+            async function SearchCategoryFunc() {
+                const response = await axios.get(`http://localhost:5000/cb/search-category/${SearchCategory}`, {
                     withCredentials: true
                 });
-                setSearchResult(response?.data?.Categories || []);
-            } catch (err) {
-                console.error("Search error", err);
+                setSearchResult(response?.data?.Categories);
             }
-        }, 600);
+            SearchCategoryFunc();
+        }, 1000)
 
-        return () => clearTimeout(delay);
-    }, [searchQuery]);
+        return () => {
+            clearTimeout(res);
+        }
 
-    // Unified list for rendering
-    const categoriesToDisplay = searchQuery ? searchResult : Category;
+    }, [SearchCategory])
+
+    console.log("Search: ", SearchCategory);
 
     return (
-        <div className='w-full p-6 h-full bg-white shadow-sm border rounded-3xl overflow-hidden flex flex-col'>
-            
-            {/* Top Bar */}
-            <div className="flex w-full justify-between items-center md:mb-6 flex-wrap gap-2 mb-2">
-                <Button 
-                    className="rounded-xl bg-orange-500 hover:bg-orange-600 transition-colors"
-                    onClick={() => {
-                        setSelectedCategory(null);
-                        setCategoryName("");
-                        setOpenDialog(true);
-                    }}
-                >
-                    <Plus className="mr-2 h-4 w-4" /> Add Category
-                </Button>
-                
-                <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                    <Input 
-                        type="text" 
-                        placeholder="Search categories..." 
-                        className="w-[250px] pl-10 bg-gray-50 border-none ring-1 ring-gray-200"
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                </div>
+        <div className='w-full  p-3 h-[70%] bg-gray-100 rounded-3xl '>
+
+            <div className="flex justify-between items-center">
+                <button className="cursor-pointer px-4 py-2 bg-orange-400 rounded-2xl text-white font-bold" onClick={() => {
+                    setOpenDialog(true)
+                    setCategoryDetails(null)
+                    setCategory("")
+                }}>Add Category</button>
+                <Input type="text" placeholder="Enter your category name!" className="w-[200px] bg-white"
+                    onChange={(e) => setSearchCategory(e.target.value)}
+                />
             </div>
 
-            {/* Modal */}
             <Dialog open={openDialog} onOpenChange={setOpenDialog}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>{selectedCategory ? "Update Category" : "Add New Category"}</DialogTitle>
+                        <DialogTitle>
+                            Category
+                        </DialogTitle>
                     </DialogHeader>
-                    <div className="space-y-4 py-4">
-                        <Input 
-                            placeholder="e.g. Electronics" 
-                            value={categoryName} 
-                            onChange={(e) => setCategoryName(e.target.value)} 
-                        />
-                        <Button 
-                            disabled={isSubmitting}
-                            onClick={handleCategorySubmit}
-                            className="w-full"
-                        >
-                            {isSubmitting ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : null}
-                            {selectedCategory ? "Update Category" : "Save Category"}
-                        </Button>
+                    <div className="space-y-2">
+                        <Input type="text" placeholder="Enter your Category Name!" value={category} onChange={(e) => setCategory(e.target.value)} />
+                        <Button className="cursor-pointer" onClick={() => handleCategory()}>Add</Button>
                     </div>
                 </DialogContent>
             </Dialog>
 
-            {/* Data Table Area */}
-            <div className="flex-1 overflow-auto space-y-2 pr-2">
-                {categoriesToDisplay && categoriesToDisplay.length > 0 ? (
-                    categoriesToDisplay.map((item, i) => (
-                        <div 
-                            key={item?._id} 
-                            className="group flex justify-between items-center px-5 py-3 rounded-2xl bg-gray-50 hover:bg-white hover:shadow-md border border-transparent hover:border-gray-100 transition-all duration-200"
-                        >
-                            <div className="flex items-center gap-4">
-                                <span className='text-xs font-mono text-gray-400'>#{i + 1}</span>
-                                <h2 className='text-sm font-semibold text-gray-700'>{item.CategoryName}</h2>
-                            </div>
-                            
-                            <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
-                                <Button 
-                                    variant="outline" 
-                                    size="sm" 
-                                    className="h-8 w-8 p-0 text-blue-600"
-                                    onClick={() => {
-                                        setSelectedCategory(item);
-                                        setCategoryName(item.CategoryName);
-                                        setOpenDialog(true);
-                                    }}
-                                >
-                                    <Edit size={14} />
-                                </Button>
-                                <Button 
-                                    variant="outline" 
-                                    size="sm" 
-                                    className="h-8 w-8 p-0 text-red-600"
-                                    onClick={() => handleDelete(item._id)}
-                                >
-                                    <Trash2 size={14} />
-                                </Button>
-                            </div>
-                        </div>
-                    ))
-                ) : (
-                    <div className="flex flex-col items-center justify-center h-40 text-gray-400">
-                        <p>{isLoading ? "Loading..." : "No categories found"}</p>
-                    </div>
-                )}
+
+            <div className="flex flex-col gap-2 w-full h-[80%] overflow-auto justify-start items-start mt-3">
+                {
+                    SearchCategory ? (
+                        SearchResult && SearchResult.length > 0 ?
+                            (SearchResult.map((items, i) => (
+                                <div className="group flex justify-between w-full items-center px-4 py-2 border-b border-gray-500 bg-gray-200" key={items?._id}>
+                                    <h1 className='text-lg font-bold'>{i + 1}</h1>
+                                    <h2 className='text-lg font-bold'>{items.CategoryName}</h2>
+                                    <div className="space-x-3 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-x-4 group-hover:translate-x-0">
+                                        <button className='bg-transparent border border-blue-800 px-2 py-1 rounded-lg hover:bg-blue-500 hover:text-white cursor-pointer'
+                                            onClick={() => {
+                                                HandleEditCategory(items)
+                                                setOpenDialog(true)
+                                            }}
+                                        >Edit</button>
+                                        <button className='bg-transparent border border-red-800 px-2 py-1 rounded-lg hover:bg-red-500 hover:text-white cursor-pointer'
+                                            onClick={() => HandleDeleteCategory(items)}
+                                        >Delete</button>
+                                    </div>
+                                </div>
+                            ))) : (<p>No brand found</p>)
+                    ) : (
+                        Category && Category.length > 0 ?
+                            Category.map((items, i) => (
+                                <div className="group flex justify-between w-full items-center px-4 py-2 border-b border-gray-500 bg-gray-200" key={items?._id}>
+                                    <h1 className='text-lg font-bold'>{i + 1}</h1>
+                                    <h2 className='text-lg font-bold'>{items.CategoryName}</h2>
+                                    <div className="space-x-3 opacity-0 group-hover:opacity-100 transition-all
+                                    duration-500 translate-x-4 group-hover:translate-x-0">
+                                        <button className='bg-transparent border border-blue-800 px-2 py-1 rounded-lg hover:bg-blue-500 hover:text-white cursor-pointer'
+                                            onClick={() => {
+                                                HandleEditCategory(items)
+                                                setOpenDialog(true)
+                                            }}
+                                        >Edit</button>
+                                        <button className='bg-transparent border border-red-800 px-2 py-1 rounded-lg hover:bg-red-500 hover:text-white cursor-pointer'
+                                            onClick={() => HandleDeleteCategory(items)}
+                                        >Delete</button>
+                                    </div>
+                                </div>
+                            )) : "No Categories found"
+                    )
+                }
             </div>
         </div>
-    );
+    )
 }
 
-export default CategoryManagment;
+export default CategoryManagment

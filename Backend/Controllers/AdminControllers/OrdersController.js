@@ -51,20 +51,4 @@ const StatusUpdate = async (req, res) => {
     }
 }
 
-const FetchOrders = async (req, res) => {
-    try {
-        const UserId = req.params.id
-        const AllOrders = await CheckoutModel.find({UserId}).populate("Products.ProductId");
-        return res.status(200).json({
-            success: true,  
-            Data: AllOrders
-        })
-    } catch (e) {
-        return res.status(500).json({
-            success: false,
-            message: "Server issue"
-        })
-    }
-}
-
-module.exports = { ShowOrders, StatusUpdate, FetchOrders };
+module.exports = { ShowOrders, StatusUpdate };
