@@ -31,6 +31,10 @@ const ProductSchema = new mongoose.Schema({
     },
     ProductDesc: {
         type: String
+    },
+    isFeatured:{
+        type: Boolean,
+        default: false
     }
 })
 

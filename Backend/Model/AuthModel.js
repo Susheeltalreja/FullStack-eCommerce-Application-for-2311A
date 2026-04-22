@@ -28,7 +28,7 @@ const AuthSchema = new mongoose.Schema({
         type: String,
         default: "pending"
     }
-})
+}, { timestamps: true })
 
 const AuthModel = mongoose.model("Register", AuthSchema);
 module.exports = AuthModel;

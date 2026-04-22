@@ -2,130 +2,184 @@ import { FetchOrdersThunk, UpdateStatusThunk } from '@/StateManagement/AdminSlic
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'sonner';
+import { ChevronDown, Package, Calendar, User, CreditCard } from 'lucide-react';
 
 const CheckoutComponent = () => {
   const [expandedId, setExpandedId] = useState(null);
-
+  const [status, setStatus] = useState("Pending");
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    dispatch(FetchOrdersThunk())
-  }, [])
 
   const { Orders } = useSelector(st => st.Orders);
 
-  const [Status, setStatus] = useState("pending");
+  useEffect(() => {
+    dispatch(FetchOrdersThunk());
+  }, [dispatch]);
 
-  function HandleStatus(id){
-    dispatch(UpdateStatusThunk({id: id, Data: {Status}})).then((res) => {
-      if(res?.payload?.success){
-        dispatch(FetchOrdersThunk())
-        toast.success(`${res?.payload?.message}`)
-      }else{
-        toast.error(`${res?.payload?.message}`)
+  const handleStatusUpdate = (id) => {
+    dispatch(UpdateStatusThunk({ id: id, Data: { Status: status } })).then((res) => {
+      if (res?.payload?.success) {
+        dispatch(FetchOrdersThunk());
+        toast.success(res.payload.message);
+      } else {
+        toast.error(res?.payload?.message);
       }
-    })
-  }
+    });
+  };
 
   return (
-    <div className="w-full max-w-5xl mx-auto space-y-4">
+    <div className="w-full px-2 sm:px-4 py-6 max-w-6xl mx-auto space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-bold text-slate-800">Order Management</h2>
-        <div className="text-sm text-slate-500">Total Orders: {Orders?.length}</div>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b pb-6">
+        <div>
+          <h2 className="text-2xl font-extrabold text-slate-900">Order Management</h2>
+          <p className="text-sm text-slate-500">Monitor and update customer shipments</p>
+        </div>
+        <div className="bg-blue-50 text-blue-700 px-4 py-2 rounded-lg text-sm font-bold self-start">
+          Total Orders: {Orders?.length || 0}
+        </div>
       </div>
 
       {/* Orders List */}
-      <div className="space-y-3">
-        {Orders?.map((order, index) => {
+      <div className="space-y-4">
+        {Orders?.map((order) => {
           const isExpanded = expandedId === order?._id;
 
           return (
             <div
               key={order?._id}
-              className={`
-                bg-white border rounded-xl overflow-hidden transition-all duration-300
-                ${isExpanded ? 'ring-2 ring-blue-500 shadow-lg' : 'hover:border-blue-300 shadow-sm'}
-                animate-in fade-in slide-in-from-bottom-2
-              `}
-              style={{ animationFillMode: 'backwards', animationDelay: `${index * 100}ms` }}
+              className={`bg-white border rounded-2xl overflow-hidden transition-shadow ${
+                isExpanded ? 'ring-1 ring-blue-500 shadow-md' : 'shadow-sm hover:shadow-md'
+              }`}
             >
-              {/* Main Summary Row */}
+              {/* Responsive Header Row */}
               <div
                 onClick={() => setExpandedId(isExpanded ? null : order?._id)}
-                className="p-4 flex flex-wrap items-center justify-between cursor-pointer group"
+                className="p-4 sm:p-6 cursor-pointer"
               >
-                <div className="flex items-center gap-6">
-                  <span className="text-sm font-mono font-bold text-slate-400">#{order?._id}</span>
-                  <div>
-                    <p className="font-semibold text-slate-800">{order?.FullName}</p>
-                    <p className="text-xs text-slate-500">{order?.createdAt?.split("T")[0]}</p>
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 items-center">
+                  {/* Customer & ID */}
+                  <div className="space-y-1 col-span-1">
+                    <p className="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Customer</p>
+                    <p className="font-bold text-slate-800 truncate">{order?.FullName}</p>
+                    <p className="text-[10px] font-mono text-slate-400 truncate max-w-[120px]">ID: {order?._id}</p>
+                  </div>
+
+                  {/* Date - Hidden on very small screens, shown on sm */}
+                  <div className="hidden sm:block space-y-1">
+                    <p className="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Ordered On</p>
+                    <div className="flex items-center gap-2 text-slate-600">
+                      <Calendar size={14} />
+                      <span className="text-sm">{order?.createdAt?.split("T")[0]}</span>
+                    </div>
+                  </div>
+
+                  {/* Amount */}
+                  <div className="space-y-1 text-right lg:text-left">
+                    <p className="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Total Amount</p>
+                    <p className="font-bold text-blue-600">Rs. {order?.Total}</p>
+                  </div>
+
+                  {/* Status & Toggle */}
+                  <div className="flex items-center justify-end gap-3 col-span-1 lg:col-span-1">
+                    <span className={`hidden md:inline-block px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${
+                      order.Status === 'Shipped' || order.Status === 'Delivered' 
+                      ? 'bg-green-100 text-green-700' 
+                      : 'bg-amber-100 text-amber-700'
+                    }`}>
+                      {order?.Status}
+                    </span>
+                    <ChevronDown 
+                      className={`text-slate-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`} 
+                      size={20} 
+                    />
                   </div>
                 </div>
-
-                <div className="flex items-center gap-8">
-                  <span className="font-bold text-slate-700">Rs. {order?.Total}</span>
-                  <span className={`
-                    px-3 py-1 rounded-full text-xs font-medium transition-colors
-                    ${order.Status === 'Shipped' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}
-                  `}>
-                    {order?.Status}
-                  </span>
-
-                  {/* Chevron Icon */}
-                  <svg
-                    className={`w-5 h-5 text-slate-400 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}
-                    fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-                  </svg>
+                
+                {/* Mobile Status Badge (Only shows on mobile) */}
+                <div className="mt-3 md:hidden">
+                    <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${
+                      order.Status === 'Shipped' || order.Status === 'Delivered' 
+                      ? 'bg-green-100 text-green-700' 
+                      : 'bg-amber-100 text-amber-700'
+                    }`}>
+                      {order?.Status}
+                    </span>
                 </div>
               </div>
 
-              {/* Animated Detail Section (Pure Tailwind Transition) */}
-              <div className={`
-                grid transition-[grid-template-rows] duration-300 ease-in-out
-                ${isExpanded ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}
-              `}>
-                <div className="overflow-hidden bg-slate-50">
-                  <div className="p-6 border-t border-slate-100 flex flex-col md:flex-row justify-between gap-6">
-                    {/* Items List */}
-                    <div className="flex-1">
-                      <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Order Items</h4>
-                      <div className="space-y-2 text-sm text-slate-600">
-                        {
-                          order?.Products.map((item) => (
-                            <div className="flex justify-between border-b border-slate-200 pb-1">
-                              <span>{item?.ProductId?.ProductName} × {item?.Quantity}</span>
-                              <span>Rs. {item?.ProductId?.ProductSalePrice || item?.ProductId?.ProductPrice}</span>
-                            </div>
-                          ))
-                        }
+              {/* Collapsible Content */}
+              {isExpanded && (
+                <div className="bg-slate-50 border-t">
+                  <div className="p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    
+                    {/* Items Section */}
+                    <div className="lg:col-span-2">
+                      <h4 className="flex items-center gap-2 text-xs font-bold text-slate-500 uppercase mb-4">
+                        <Package size={14} /> Ordered Products
+                      </h4>
+                      <div className="bg-white border rounded-xl overflow-hidden">
+                        <table className="w-full text-left text-sm">
+                          <thead className="bg-slate-100 text-slate-600 text-[10px] uppercase font-bold">
+                            <tr>
+                              <th className="px-4 py-2">Item</th>
+                              <th className="px-4 py-2 text-center">Qty</th>
+                              <th className="px-4 py-2 text-right">Price</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y">
+                            {order?.Products.map((item, idx) => (
+                              <tr key={idx}>
+                                <td className="px-4 py-3 font-medium text-slate-700">{item?.ProductId?.ProductName}</td>
+                                <td className="px-4 py-3 text-center text-slate-500">{item?.Quantity}</td>
+                                <td className="px-4 py-3 text-right font-semibold">
+                                    Rs. {item?.ProductId?.ProductSalePrice || item?.ProductId?.ProductPrice}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
                       </div>
                     </div>
 
-                    {/* Status Update Form */}
-                    <div className="w-full md:w-64 bg-white p-4 rounded-lg border border-slate-200 shadow-inner">
-                      <label className="block text-xs font-bold text-slate-500 mb-2 uppercase">Update Status</label>
-                      <div className="flex flex-col gap-2">
-                        <select className="w-full text-sm border-slate-200 rounded-md focus:ring-blue-500 focus:border-blue-500 p-2 outline-none bg-slate-50"
-                        onChange={(e) => setStatus(e.target.value)}
-                        >
-                          <option value="Pending">Pending</option>
-                          <option value="Processing">Processing</option>
-                          <option value="Shipped">Shipped</option>
-                          <option value="Delivered">Delivered</option>
-                        </select>
-                        <button className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold py-2 px-4 rounded-md transition-all active:scale-95"
-                        onClick={() => HandleStatus(order?._id)}
-                        >
-                          Save Update
-                        </button>
+                    {/* Status Update Card */}
+                    <div className="space-y-4">
+                      <div className="bg-white p-5 rounded-xl border shadow-sm">
+                        <h4 className="text-xs font-bold text-slate-500 uppercase mb-4 flex items-center gap-2">
+                           Update Progress
+                        </h4>
+                        <div className="space-y-3">
+                          <select 
+                            className="w-full text-sm border-slate-200 rounded-lg p-2.5 bg-slate-50 focus:ring-2 focus:ring-blue-500 outline-none"
+                            defaultValue={order?.Status}
+                            onChange={(e) => setStatus(e.target.value)}
+                          >
+                            <option value="Pending">Pending</option>
+                            <option value="Processing">Processing</option>
+                            <option value="Shipped">Shipped</option>
+                            <option value="Delivered">Delivered</option>
+                          </select>
+                          <button 
+                            className="w-full bg-slate-900 hover:bg-black text-white text-sm font-bold py-2.5 rounded-lg transition-colors shadow-sm"
+                            onClick={() => handleStatusUpdate(order?._id)}
+                          >
+                            Apply Status
+                          </button>
+                        </div>
+                      </div>
+                      
+                      {/* Shipping Info Placeholder */}
+                      <div className="bg-blue-600 text-white p-4 rounded-xl shadow-sm">
+                        <p className="text-[10px] uppercase font-bold opacity-80 mb-1">Payment Method</p>
+                        <div className="flex items-center gap-2">
+                            <CreditCard size={16} />
+                            <span className="font-bold">Cash on Delivery</span>
+                        </div>
                       </div>
                     </div>
+
                   </div>
                 </div>
-              </div>
+              )}
             </div>
           );
         })}

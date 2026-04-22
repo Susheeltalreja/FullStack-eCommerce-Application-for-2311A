@@ -49,6 +49,6 @@ app.use("/user/product", UserProductRoutes);
 app.use("/user/cart", CartRoutes)
 app.use("/user/checkout", CheckoutRoutes);
 app.use("/admin/orders", OrderRoutes);
-
+app.use("/admin", require("./Routes/AdminRoutes/DashboardRoutes"))
 app.listen(Port, console.log(`server is listen on ${Port}`));
 

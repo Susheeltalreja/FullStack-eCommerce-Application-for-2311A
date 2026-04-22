@@ -12,6 +12,7 @@ import UserLayout from './Components/UserComponents/UserLayout'
 import Listing from './pages/UserPages/Listing'
 import Checkout from './pages/UserPages/Checkout'
 import Home from './pages/UserPages/Home'
+import Order from "./pages/UserPages/Orders";
 
 // Auth related stuff 
 import AuthLayout from './Components/AuthComponents/AuthLayout'
@@ -59,6 +60,7 @@ function App() {
         <Route path='home' element={<Home />}></Route>
         <Route path="checkout" element={<Checkout />}></Route>
         <Route path="list" element={<Listing />}></Route>
+        <Route path="orders" element={<Order />}></Route>
       </Route>
 
       {/* Root page  */}

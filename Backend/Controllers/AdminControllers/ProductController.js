@@ -89,8 +89,8 @@ const UpdateProducts = async (req, res) => {
     try {
 
         const ProductId = req.params.id;
-        const FindProduct = await ProductModel.findOne({_id: ProductId})
-        if(!FindProduct){
+        const FindProduct = await ProductModel.findOne({ _id: ProductId })
+        if (!FindProduct) {
             return res.json({
                 success: false,
                 message: "Product not found"
@@ -111,9 +111,9 @@ const UpdateProducts = async (req, res) => {
             })
         }
 
-        if(ProductImage !== FindProduct.ProductImage){
+        if (ProductImage !== FindProduct.ProductImage) {
             const Address = path.join("Uploads/", FindProduct.ProductImage)
-            if(fs.existsSync(Address)){
+            if (fs.existsSync(Address)) {
                 fs.unlinkSync(Address)
             }
         }
@@ -141,18 +141,18 @@ const UpdateProducts = async (req, res) => {
     }
 }
 
-const DeleteProduct = async(req, res) => {
-    try{
+const DeleteProduct = async (req, res) => {
+    try {
         const ProductId = req.params.id;
         const ProductData = await ProductModel.findById(ProductId)
-        if(!ProductData){
+        if (!ProductData) {
             return res.status(400).json({
                 success: false,
                 message: "Product not found"
             })
         }
         const LocalAddress = path.join("Uploads", ProductData.ProductImage);
-        if(fs.existsSync(LocalAddress)){
+        if (fs.existsSync(LocalAddress)) {
             fs.unlinkSync(LocalAddress)
         }
         await ProductModel.findByIdAndDelete(ProductId);
@@ -160,7 +160,7 @@ const DeleteProduct = async(req, res) => {
             success: true,
             message: "Product deleted successfully"
         })
-    }catch(e){
+    } catch (e) {
         console.log(`Error: ${e}`);
         return res.status(500).json({
             success: false,
@@ -168,5 +168,41 @@ const DeleteProduct = async(req, res) => {
         })
     }
 }
+const MakeFeatured = async (req, res) => {
+    const { Featured } = req.body; 
+    const ProductId = req.params.id;
 
-module.exports = { GenerateImageResponse, AddProduct, fetchProducts, UpdateProducts, DeleteProduct };
+    try {
+        const product = await ProductModel.findById(ProductId);
+        if (!product) return res.status(404).json({ success: false, message: "Product not found" });
+
+        // LIMIT CHECK: Only block if turning ON (Featured === true)
+        if (Featured === true) {
+            // Count all featured products EXCEPT the current one
+            const featuredCount = await ProductModel.countDocuments({ 
+                isFeatured: true, 
+                _id: { $ne: ProductId } // Important: Don't count yourself
+            });
+
+            if (featuredCount >= 3) {
+                return res.status(200).json({ 
+                    success: false, 
+                    message: "Limit reached! Unfeature another product first." 
+                });
+            }
+        }
+
+        product.isFeatured = Featured;
+        await product.save();
+
+        return res.status(200).json({
+            success: true,
+            message: Featured ? "Added to Featured" : "Removed from Featured",
+            isFeatured: product.isFeatured 
+        });
+    } catch (e) {
+        return res.status(500).json({ success: false, message: "Server issue" });
+    }
+}
+
+module.exports = { GenerateImageResponse, AddProduct, fetchProducts, UpdateProducts, DeleteProduct, MakeFeatured };

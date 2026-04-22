@@ -33,6 +33,13 @@ export const DeleteProductThunk = createAsyncThunk(
         return response?.data
     }
 )
+export const FeaturedProductThunk = createAsyncThunk(
+    "/product/FeaturedProductThunk",
+    async({id,data}) => {
+        const response = await axios.put(`http://localhost:5000/product/feature/${id}`, data)
+        return response?.data;
+    }
+)
 
 const ProductSlice = createSlice(
     {
